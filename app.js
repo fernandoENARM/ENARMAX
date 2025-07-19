@@ -40,6 +40,7 @@ const difficultyBtns = document.querySelectorAll('.difficulty-btn');
 const addCardBtn = document.getElementById('add-card-btn');
 const newQuestionInput = document.getElementById('new-question');
 const newAnswerInput = document.getElementById('new-answer');
+const themeToggle = document.getElementById('theme-toggle');
 
 // App state
 let currentCardIndex = 0;
@@ -48,9 +49,24 @@ let pendingCards = 0;
 let newCards = 0;
 let isFlipped = false;
 
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (themeToggle) themeToggle.textContent = 'Modo Día';
+    }
+}
+
+function toggleTheme() {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    themeToggle.textContent = isDark ? 'Modo Día' : 'Modo Noche';
+}
+
 // Initialize the app
 function init() {
     loadFlashcards();
+    loadTheme();
     updateStats();
     showCard();
     
@@ -59,6 +75,7 @@ function init() {
     nextBtn.addEventListener('click', showNextCard);
     flipBtn.addEventListener('click', flipCard);
     addCardBtn.addEventListener('click', addNewCard);
+    if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
     
     // Difficulty buttons
     difficultyBtns.forEach(btn => {

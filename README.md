@@ -7,6 +7,7 @@ ENARMAX es una pequeña aplicación web para repasar tarjetas médicas. Las tarj
 1. Clona este repositorio.
 2. Abre el archivo `index.html` en tu navegador.
 3. Interactúa con las tarjetas usando los botones disponibles.
+4. Cambia entre modo día y noche con el botón "Modo Noche".
 
 No se requieren dependencias externas ni servidores adicionales; todo funciona de manera estática en el navegador.
 
