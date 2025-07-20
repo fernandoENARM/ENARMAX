@@ -150,7 +150,20 @@ const defaultTopicMap = {
     ],
     'pediatria': [
         'Neonatología',
-        'Infectología'
+        'Enfermedades Infecciosas Pediátricas',
+        'Neumología Pediátrica',
+        'Cardiología Pediátrica',
+        'Gastroenterología y Nutrición',
+        'Nefrología Pediátrica',
+        'Oncología Pediátrica',
+        'Inmunología',
+        'Dermatología Pediátrica',
+        'Crecimiento y Desarrollo',
+        'Vacunación y Medicina Preventiva',
+        'Urgencias y Cuidados Críticos',
+        'Medicina del Adolescente',
+        'Genética y Errores Innatos del Metabolismo',
+        'Toxicología Pediátrica'
     ],
     'cirugia': [
         'Trauma'
