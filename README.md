@@ -8,8 +8,7 @@ ENARMAX es una pequeña aplicación web para repasar tarjetas médicas. Las tarj
 2. Abre el archivo `index.html` en tu navegador.
 3. Interactúa con las tarjetas usando los botones disponibles.
 4. Cambia entre modo día y noche con el botón "Modo Noche".
-5. Si deseas compilar los archivos TypeScript ejecuta `npm run build`. Esto creará la carpeta `dist/`, la cual no está versionada y puede eliminarse con `git clean -fd` u otra herramienta similar.
-6. Para practicar con límite de tiempo abre `exam.html` y comienza un examen adaptativo de 40 preguntas.
+5. Para practicar con límite de tiempo abre `exam.html` y comienza un examen adaptativo de 40 preguntas.
 
 No se requieren dependencias externas ni servidores adicionales; todo funciona de manera estática en el navegador.
 

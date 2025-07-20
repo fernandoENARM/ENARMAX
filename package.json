@@ -4,7 +4,6 @@
   "description": "ENARMAX es una pequeña aplicación web para repasar tarjetas médicas. Las tarjetas se muestran una a una y permiten dar vuelta la carta para ver la respuesta. El avance puede marcarse según la dificultad percibida.",
   "main": "app.js",
   "scripts": {
-    "build": "npx tsc",
     "test": "jest"
   },
   "dependencies": {
@@ -14,12 +13,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^14.0.0",
-    "@types/jest": "^29.5.3",
-    "@types/react": "^18.2.14",
-    "@types/react-dom": "^18.2.6",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.1.1",
-    "typescript": "^5.2.2"
+    "jest": "^29.7.0"
   },
   "keywords": [],
   "author": "",
