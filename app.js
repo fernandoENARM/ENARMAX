@@ -126,13 +126,53 @@ const specialtyNames = specialties.reduce((acc, s) => {
     return acc;
 }, {});
 
+function slugify(str) {
+    return str.normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+}
+
+const defaultTopicMap = {
+    'medicina-interna': [
+        'Cardiología',
+        'Neumología',
+        'Endocrinología y Metabolismo',
+        'Gastroenterología',
+        'Nefrología',
+        'Reumatología',
+        'Hematología',
+        'Enfermedades Infecciosas',
+        'Neurología',
+        'Oncología',
+        'Dermatología'
+    ],
+    'pediatria': [
+        'Neonatología',
+        'Infectología'
+    ],
+    'cirugia': [
+        'Trauma'
+    ]
+};
+
 let topics = JSON.parse(localStorage.getItem('studyTopics') || '[]');
 if (topics.length === 0) {
-    topics = [
-        { id: 'neonatologia', name: 'Neonatología', specialty: 'pediatria', total: 10, reviews: 0, errors: 0, mastery: 0 },
-        { id: 'infectologia', name: 'Infectología', specialty: 'pediatria', total: 8, reviews: 0, errors: 0, mastery: 0 },
-        { id: 'trauma', name: 'Trauma', specialty: 'cirugia', total: 12, reviews: 0, errors: 0, mastery: 0 }
-    ];
+    topics = [];
+    Object.entries(defaultTopicMap).forEach(([spec, names]) => {
+        names.forEach(name => {
+            topics.push({
+                id: slugify(name),
+                name,
+                specialty: spec,
+                total: 0,
+                reviews: 0,
+                errors: 0,
+                mastery: 0
+            });
+        });
+    });
 }
 
 function saveTopics() {
