@@ -118,6 +118,107 @@
         }
       });
     }
+
+    // ----- Persistence helpers -----
+    const STORAGE_KEY = 'appData';
+    function loadData(){
+      try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {metrics:{}, activityLog:[]}; }
+      catch{ return {metrics:{}, activityLog:[]}; }
+    }
+
+    function saveData(data){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function ensureMetrics(topic){
+      if(!appData.metrics[topic]){
+        const cards = JSON.parse(localStorage.getItem('medicalFlashcards')||'[]');
+        const total = cards.filter(c => c.specialty === topic).length;
+        appData.metrics[topic] = {reviews:0, errors:0, totalCards: total};
+      } else {
+        const cards = JSON.parse(localStorage.getItem('medicalFlashcards')||'[]');
+        appData.metrics[topic].totalCards = cards.filter(c => c.specialty === topic).length;
+      }
+    }
+
+    function scheduleCard(card, quality){
+      card.efactor = card.efactor || 2.5;
+      card.repetitions = card.repetitions || 0;
+      card.interval = card.interval || 0;
+
+      if(quality < 3){
+        card.repetitions = 0;
+        card.interval = 1;
+      }else{
+        card.repetitions += 1;
+        if(card.repetitions === 1) card.interval = 1;
+        else if(card.repetitions === 2) card.interval = 6;
+        else card.interval = Math.round(card.interval * card.efactor);
+
+        card.efactor = card.efactor + (0.1 - (5 - quality)*(0.08 + (5 - quality)*0.02));
+        if(card.efactor < 1.3) card.efactor = 1.3;
+      }
+
+      const next = new Date();
+      next.setDate(next.getDate() + card.interval);
+      card.nextReview = next.toISOString();
+      card.lastReviewed = new Date().toISOString();
+      card.quality = quality;
+    }
+
+    function updateDashboard(){
+      const heatmapDiv = document.getElementById('study-heatmap');
+      if(!heatmapDiv) return;
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const start = new Date(today);
+      start.setDate(today.getDate()-364);
+      const data = [];
+      for(let i=0;i<365;i++){
+        const d = new Date(start);
+        d.setDate(start.getDate()+i);
+        const key = d.toISOString().slice(0,10);
+        const entry = appData.activityLog.find(a => a.date === key);
+        if(entry){
+          const acc = entry.count ? Math.round((entry.correct/entry.count)*100) : 0;
+          data.push({date:key, reviews:entry.count, accuracy:acc, cards:[]});
+        }else{
+          data.push({date:key, reviews:0, cards:[]});
+        }
+      }
+      renderStudyHeatmap(data);
+    }
+
+    let appData = loadData();
+    updateDashboard();
+
+    if(window.setDifficulty){
+      const original = window.setDifficulty;
+      window.setDifficulty = function(diff){
+        const card = window.flashcards && window.flashcards[window.currentCardIndex];
+        original(diff);
+        if(card){
+          const qMap = {easy:5, medium:4, hard:2};
+          const q = qMap[diff] ?? 0;
+          scheduleCard(card, q);
+          ensureMetrics(card.specialty);
+          const m = appData.metrics[card.specialty];
+          m.reviews += 1;
+          if(q <= 3) m.errors += 1;
+          const today = new Date().toISOString().slice(0,10);
+          let log = appData.activityLog.find(a => a.date === today);
+          if(log){
+            log.count += 1;
+            if(q >= 4) log.correct += 1;
+          }else{
+            appData.activityLog.push({date: today, count:1, correct: q>=4?1:0});
+          }
+          saveData(appData);
+          if(typeof saveFlashcards === 'function') saveFlashcards();
+          updateDashboard();
+        }
+      };
+    }
   });
 
   // ----- Adaptive exam mode -----
