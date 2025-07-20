@@ -112,6 +112,20 @@ let flashcards = [
     }
 ];
 
+const specialties = [
+    { slug: 'medicina-interna', name: 'Medicina Interna', emoji: '🩺' },
+    { slug: 'pediatria', name: 'Pediatría', emoji: '👶' },
+    { slug: 'gineco-obstetricia', name: 'Ginecología y Obstetricia', emoji: '🤰' },
+    { slug: 'cirugia', name: 'Cirugía', emoji: '🔪' },
+    { slug: 'atls', name: 'ATLS', emoji: '🚑' },
+    { slug: 'acls', name: 'ACLS', emoji: '❤️' }
+];
+
+const specialtyNames = specialties.reduce((acc, s) => {
+    acc[s.slug] = s.name;
+    return acc;
+}, {});
+
 // DOM Elements
 const flashcard = document.getElementById('flashcard');
 const questionElement = document.getElementById('question');
@@ -145,7 +159,6 @@ const userNameInput = document.getElementById('user-name-input');
 const progressChartCanvas = document.getElementById('progress-chart');
 const weakTopicsList = document.getElementById('weak-topics-list');
 
-const specialtyNames = {"medicina-interna":"Medicina Interna","pediatria":"Pediatría","gineco-obstetricia":"Ginecología y Obstetricia","cirugia":"Cirugía","atls":"ATLS","acls":"ACLS"};
 // App state
 let allFlashcards = [];
 let currentCardIndex = 0;
@@ -289,8 +302,43 @@ function renderWeakTopics() {
     });
 }
 
+function populateSpecialtySelect() {
+    if (!newSpecialtySelect) return;
+    newSpecialtySelect.innerHTML = '';
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Especialidad';
+    newSpecialtySelect.appendChild(placeholder);
+    specialties.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.slug;
+        opt.textContent = s.name;
+        newSpecialtySelect.appendChild(opt);
+    });
+}
+
+function renderSpecialtyCards() {
+    const grid = document.getElementById('specialty-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    specialties.forEach(s => {
+        const card = document.createElement('a');
+        card.href = `flashcards.html?specialty=${s.slug}`;
+        card.className = 'specialty-card';
+        const emoji = document.createElement('span');
+        emoji.className = 'emoji';
+        emoji.textContent = s.emoji;
+        const name = document.createElement('span');
+        name.textContent = s.name;
+        card.appendChild(emoji);
+        card.appendChild(name);
+        grid.appendChild(card);
+    });
+}
+
 // Initialize flashcards page
 function initFlashcardsPage() {
+    populateSpecialtySelect();
     const specialty = getQueryParam("specialty");
     if (specialty) {
         flashcards = allFlashcards.filter(c => c.specialty === specialty);
@@ -328,6 +376,7 @@ function initFlashcardsPage() {
 
 function initHomePage() {
     loadTheme();
+    renderSpecialtyCards();
     loadProfilePic();
     loadUserName();
     renderProgressChart();
