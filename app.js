@@ -512,8 +512,14 @@ function initHomePage() {
 function loadFlashcards() {
     const savedFlashcards = localStorage.getItem('medicalFlashcards');
     if (savedFlashcards) {
-        allFlashcards = JSON.parse(savedFlashcards);
-        flashcards = allFlashcards;
+        try {
+            allFlashcards = JSON.parse(savedFlashcards);
+            flashcards = allFlashcards;
+        } catch (e) {
+            localStorage.removeItem('medicalFlashcards');
+            alert('Error al cargar las tarjetas guardadas. Se reinició el almacenamiento.');
+            allFlashcards = flashcards;
+        }
     } else {
         allFlashcards = flashcards;
     }
