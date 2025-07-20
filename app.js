@@ -90,6 +90,12 @@ const newQuestionInput = document.getElementById('new-question');
 const newAnswerInput = document.getElementById('new-answer');
 const themeToggle = document.getElementById('theme-toggle');
 const specialtyTitle = document.getElementById("specialty-title");
+// Home page elements
+const profilePic = document.getElementById('profile-pic');
+const changePicBtn = document.getElementById('change-pic-btn');
+const profilePicInput = document.getElementById('profile-pic-input');
+const progressChartCanvas = document.getElementById('progress-chart');
+const weakTopicsList = document.getElementById('weak-topics-list');
 
 const specialtyNames = {"medicina-interna":"Medicina Interna","pediatria":"Pediatría","gineco-obstetricia":"Ginecología y Obstetricia","cirugia":"Cirugía","atls":"ATLS","acls":"ACLS"};
 // App state
@@ -118,9 +124,92 @@ function toggleTheme() {
     themeToggle.textContent = isDark ? 'Modo Día' : 'Modo Noche';
 }
 
-// Initialize the app
-function init() {
-    loadFlashcards();
+// Profile picture handling
+function loadProfilePic() {
+    const pic = localStorage.getItem('profilePic');
+    if (pic && profilePic) {
+        profilePic.src = pic;
+    }
+}
+
+function handleProfilePicChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        const data = ev.target.result;
+        profilePic.src = data;
+        localStorage.setItem('profilePic', data);
+    };
+    reader.readAsDataURL(file);
+}
+
+// Progress chart and weak topics
+function renderProgressChart() {
+    if (!progressChartCanvas || typeof Chart === 'undefined') return;
+    const counts = {};
+    flashcards.forEach(card => {
+        if (card.reviewCount && card.reviewCount > 0) {
+            counts[card.specialty] = (counts[card.specialty] || 0) + 1;
+        }
+    });
+    const labels = [];
+    const data = [];
+    Object.keys(specialtyNames).forEach(spec => {
+        if (counts[spec]) {
+            labels.push(specialtyNames[spec]);
+            data.push(counts[spec]);
+        }
+    });
+    if (labels.length === 0) {
+        labels.push('Sin repasar');
+        data.push(1);
+    }
+    new Chart(progressChartCanvas, {
+        type: 'pie',
+        data: {
+            labels,
+            datasets: [{
+                data,
+                backgroundColor: [
+                    '#4a6fa5',
+                    '#28a745',
+                    '#ffc107',
+                    '#dc3545',
+                    '#6c757d',
+                    '#8e44ad'
+                ]
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+}
+
+function renderWeakTopics() {
+    if (!weakTopicsList) return;
+    weakTopicsList.innerHTML = '';
+    const weakCards = flashcards
+        .filter(c => c.difficulty === 'hard')
+        .slice(0, 5);
+    if (weakCards.length === 0) {
+        const li = document.createElement('li');
+        li.textContent = 'Sin temas difíciles por ahora';
+        weakTopicsList.appendChild(li);
+        return;
+    }
+    weakCards.forEach(card => {
+        const li = document.createElement('li');
+        li.textContent = card.question;
+        weakTopicsList.appendChild(li);
+    });
+}
+
+// Initialize flashcards page
+function initFlashcardsPage() {
     const specialty = getQueryParam("specialty");
     if (specialty) {
         flashcards = flashcards.filter(c => c.specialty === specialty);
@@ -130,19 +219,30 @@ function init() {
     updatePendingAndNewCounts();
     updateStats();
     showCard();
-    nextBtn.addEventListener('click', showNextCard);
-    flipBtn.addEventListener('click', flipCard);
-    addCardBtn.addEventListener('click', addNewCard);
-    prevBtn.addEventListener("click", showPreviousCard);
+    if (nextBtn) nextBtn.addEventListener('click', showNextCard);
+    if (flipBtn) flipBtn.addEventListener('click', flipCard);
+    if (addCardBtn) addCardBtn.addEventListener('click', addNewCard);
+    if (prevBtn) prevBtn.addEventListener("click", showPreviousCard);
     if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
-    
+
     // Difficulty buttons
     difficultyBtns.forEach(btn => {
         btn.addEventListener('click', () => setDifficulty(btn.dataset.difficulty));
     });
-    
+
     // Keyboard navigation
     document.addEventListener('keydown', handleKeyDown);
+}
+
+function initHomePage() {
+    loadTheme();
+    loadProfilePic();
+    renderProgressChart();
+    renderWeakTopics();
+    if (changePicBtn && profilePicInput) {
+        changePicBtn.addEventListener('click', () => profilePicInput.click());
+        profilePicInput.addEventListener('change', handleProfilePicChange);
+    }
 }
 
 // Load flashcards from localStorage or use sample data
@@ -179,9 +279,9 @@ function updatePendingAndNewCounts() {
 
 // Update statistics display
 function updateStats() {
-    todayCount.textContent = cardsReviewedToday;
-    pendingCount.textContent = pendingCards;
-    newCount.textContent = newCards;
+    if (todayCount) todayCount.textContent = cardsReviewedToday;
+    if (pendingCount) pendingCount.textContent = pendingCards;
+    if (newCount) newCount.textContent = newCards;
 }
 
 // Show current card
@@ -342,4 +442,11 @@ function handleKeyDown(e) {
 }
 
 // Initialize the application when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+    loadFlashcards();
+    if (document.querySelector('.home')) {
+        initHomePage();
+    } else {
+        initFlashcardsPage();
+    }
+});

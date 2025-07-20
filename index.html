@@ -12,6 +12,26 @@
         <header>
             <h1>Selecciona una Especialidad</h1>
         </header>
+
+        <section class="user-panel">
+            <div class="user-info">
+                <img id="profile-pic" src="https://via.placeholder.com/80" alt="Foto de perfil">
+                <div class="user-text">
+                    <h2 id="greeting">Hola Fernando</h2>
+                    <button id="change-pic-btn" class="small-btn">Cambiar foto de perfil</button>
+                    <input type="file" id="profile-pic-input" accept="image/*" style="display:none">
+                </div>
+            </div>
+        </section>
+
+        <section class="progress-panel">
+            <canvas id="progress-chart" width="200" height="200"></canvas>
+            <div class="weak-topics">
+                <h3>Temas a reforzar</h3>
+                <ul id="weak-topics-list"></ul>
+            </div>
+        </section>
+
         <main class="specialty-grid">
             <a href="flashcards.html?specialty=medicina-interna" class="specialty-card">
                 <span class="emoji">🩺</span>
@@ -39,5 +59,7 @@
             </a>
         </main>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
