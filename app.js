@@ -166,7 +166,13 @@ const defaultTopicMap = {
         'Toxicología Pediátrica'
     ],
     'cirugia': [
-        'Trauma'
+        'Trauma',
+        'Urología',
+        'Traumatología y Ortopedia',
+        'Oftalmología',
+        'Otorrinolaringología (ORL)',
+        'Cirugía Abdominal',
+        'Angiologia'
     ]
 };
 
