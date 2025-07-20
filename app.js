@@ -283,11 +283,18 @@ function renderProgressChart() {
     });
 }
 
+function getDifficultyPriority(diff) {
+    if (diff === 'hard') return 2;
+    if (diff === 'medium') return 1;
+    return 0;
+}
+
 function renderWeakTopics() {
     if (!weakTopicsList) return;
     weakTopicsList.innerHTML = '';
     const weakCards = flashcards
-        .filter(c => c.difficulty === 'hard')
+        .filter(c => c.difficulty === 'hard' || c.difficulty === 'medium')
+        .sort((a, b) => getDifficultyPriority(b.difficulty) - getDifficultyPriority(a.difficulty))
         .slice(0, 5);
     if (weakCards.length === 0) {
         const li = document.createElement('li');
@@ -297,7 +304,17 @@ function renderWeakTopics() {
     }
     weakCards.forEach(card => {
         const li = document.createElement('li');
-        li.textContent = card.question;
+        const chip = document.createElement('span');
+        chip.className = `weak-chip ${card.difficulty}`;
+        chip.textContent = card.question;
+        const btn = document.createElement('button');
+        btn.className = 'small-btn';
+        btn.textContent = 'Estudiar ahora';
+        btn.addEventListener('click', () => {
+            window.location.href = `flashcards.html?specialty=${card.specialty}`;
+        });
+        li.appendChild(chip);
+        li.appendChild(btn);
         weakTopicsList.appendChild(li);
     });
 }
