@@ -85,5 +85,220 @@
         });
       });
     }
+
+    initAdaptiveExam();
   });
+
+  // ----- Adaptive exam mode -----
+  const examState = {
+    cards: [],
+    results: [],
+    idx: 0,
+    timer: null,
+    timeLeft: 0
+  };
+
+  function shuffle(arr){
+    for(let i = arr.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function loadCards(){
+    try {
+      return JSON.parse(localStorage.getItem('medicalFlashcards')) || [];
+    } catch { return []; }
+  }
+
+  function buildExamSet(){
+    const all = loadCards();
+    const isNew = c => c.interval === 0;
+    const difficult = all.filter(c => !isNew(c) && (c.quality ?? 0) <= 3);
+    const newCards = all.filter(isNew);
+    const rest = all.filter(c => !isNew(c) && (c.quality ?? 0) > 3);
+
+    let needDiff = Math.round(40 * 0.6);
+    let needNew = Math.round(40 * 0.3);
+    let needRest = 40 - needDiff - needNew;
+
+    if(difficult.length < needDiff){
+      needRest += needDiff - difficult.length;
+      needDiff = difficult.length;
+    }
+    if(newCards.length < needNew){
+      needRest += needNew - newCards.length;
+      needNew = newCards.length;
+    }
+    if(rest.length < needRest){
+      let shortage = needRest - rest.length;
+      needRest = rest.length;
+      const takeDiff = Math.min(shortage, difficult.length - needDiff);
+      needDiff += takeDiff;
+      shortage -= takeDiff;
+      if(shortage > 0){
+        const takeNew = Math.min(shortage, newCards.length - needNew);
+        needNew += takeNew;
+      }
+    }
+
+    shuffle(difficult);
+    shuffle(newCards);
+    shuffle(rest);
+
+    const set = [
+      ...difficult.slice(0, needDiff).map(c => ({card: c, group: 'difícil'})),
+      ...newCards.slice(0, needNew).map(c => ({card: c, group: 'nueva'})),
+      ...rest.slice(0, needRest).map(c => ({card: c, group: 'resto'}))
+    ];
+
+    while(set.length < 40){
+      const extra = [...difficult.slice(needDiff), ...newCards.slice(needNew), ...rest.slice(needRest)];
+      if(extra.length === 0) break;
+      const r = extra[Math.floor(Math.random()*extra.length)];
+      set.push({card: r, group: r.interval === 0 ? 'nueva' : ((r.quality ?? 0) <=3 ? 'difícil' : 'resto')});
+    }
+
+    shuffle(set);
+    return set.slice(0,40);
+  }
+
+  function initAdaptiveExam(){
+    const startBtn = document.getElementById('start-exam-btn');
+    if(!startBtn) return;
+    startBtn.addEventListener('click', () => startAdaptiveExam());
+    const ans = document.getElementById('exam-answer');
+    const next = document.getElementById('exam-next-btn');
+    if(ans && next){
+      ans.addEventListener('input', () => {
+        next.disabled = !ans.value.trim();
+      });
+      ans.addEventListener('keydown', e => {
+        if(e.key === 'Enter' && !next.disabled){
+          e.preventDefault();
+          submitAnswer();
+        }
+      });
+      next.addEventListener('click', () => submitAnswer());
+    }
+  }
+
+  window.startAdaptiveExam = function(){
+    examState.cards = buildExamSet();
+    examState.results = [];
+    examState.idx = 0;
+    document.getElementById('exam-lobby').style.display = 'none';
+    document.getElementById('exam-results').style.display = 'none';
+    document.getElementById('exam-question').style.display = 'block';
+    showQuestion(0);
+  };
+
+  function showQuestion(i){
+    if(i >= examState.cards.length){
+      finishExam();
+      return;
+    }
+    examState.idx = i;
+    const {card} = examState.cards[i];
+    document.getElementById('exam-progress').textContent = `${i+1}/40`;
+    document.getElementById('exam-q-text').textContent = card.question;
+    const ans = document.getElementById('exam-answer');
+    const next = document.getElementById('exam-next-btn');
+    ans.value = '';
+    next.disabled = true;
+    ans.focus();
+
+    examState.timeLeft = 90;
+    updateTimer();
+    clearInterval(examState.timer);
+    examState.timer = setInterval(() => {
+      examState.timeLeft--;
+      updateTimer();
+      if(examState.timeLeft <= 0){
+        submitAnswer(true);
+      }
+    },1000);
+  }
+
+  function updateTimer(){
+    const secs = examState.timeLeft;
+    const bar = document.getElementById('time-bar-fill');
+    const label = document.getElementById('time-bar');
+    const txt = document.getElementById('time-remaining');
+    if(bar) bar.style.width = `${(secs/90)*100}%`;
+    if(label) label.setAttribute('aria-label', `Quedan ${secs} segundos`);
+    if(txt){
+      const m = String(Math.floor(secs/60)).padStart(2,'0');
+      const s = String(secs%60).padStart(2,'0');
+      txt.textContent = `${m}:${s}`;
+    }
+  }
+
+  function submitAnswer(timedOut){
+    clearInterval(examState.timer);
+    const {card, group} = examState.cards[examState.idx];
+    const ansInput = document.getElementById('exam-answer');
+    const userAns = timedOut ? '' : ansInput.value.trim();
+    const correct = userAns && userAns.toLowerCase() === String(card.answer).toLowerCase();
+    const result = {
+      cardId: card.question,
+      answered: !timedOut && userAns !== '',
+      correct,
+      group,
+      responseTime: 90 - examState.timeLeft
+    };
+    examState.results.push(result);
+    showQuestion(examState.idx + 1);
+  }
+
+  function finishExam(){
+    document.getElementById('exam-question').style.display = 'none';
+    const resultsDiv = document.getElementById('exam-results');
+    resultsDiv.style.display = 'block';
+
+    const totalCorrect = examState.results.filter(r => r.correct).length;
+    const unanswered = examState.results.filter(r => !r.answered).length;
+    const avgTime = examState.results.reduce((s,r) => s + r.responseTime,0) / examState.results.length || 0;
+
+    const dist = {difícil: {t:0,c:0}, nueva:{t:0,c:0}, resto:{t:0,c:0}};
+    examState.results.forEach(r => {
+      dist[r.group].t++;
+      if(r.correct) dist[r.group].c++;
+    });
+
+    document.getElementById('exam-score').textContent = `Puntuación: ${Math.round((totalCorrect/ examState.results.length)*100)}%`;
+    document.getElementById('exam-stats').innerHTML =
+      `<p>Tiempo promedio: ${avgTime.toFixed(1)} s</p>`+
+      `<p>No respondidas: ${unanswered}</p>`+
+      `<p>Aciertos difícil: ${dist['difícil'].c}/${dist['difícil'].t}</p>`+
+      `<p>Aciertos nuevas: ${dist['nueva'].c}/${dist['nueva'].t}</p>`+
+      `<p>Aciertos resto: ${dist['resto'].c}/${dist['resto'].t}</p>`;
+
+    const list = document.getElementById('review-list');
+    list.innerHTML = '';
+    examState.results.forEach((r,idx) => {
+      if(!r.correct){
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '#';
+        a.textContent = `Pregunta ${idx+1}`;
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          alert(`${examState.cards[idx].card.question}\n\nRespuesta correcta:\n${examState.cards[idx].card.answer}`);
+        });
+        li.appendChild(a);
+        list.appendChild(li);
+      }
+    });
+
+    const exams = JSON.parse(localStorage.getItem('exams') || '[]');
+    exams.push({
+      id: Date.now(),
+      date: new Date().toISOString().slice(0,10),
+      score: Math.round((totalCorrect/ examState.results.length)*100),
+      answers: examState.results.map(r => ({cardId:r.cardId, correct:r.correct, time:r.responseTime}))
+    });
+    localStorage.setItem('exams', JSON.stringify(exams));
+  }
 })();
