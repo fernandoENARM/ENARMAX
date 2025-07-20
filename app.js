@@ -497,6 +497,63 @@ function renderSpecialtyCards() {
     });
 }
 
+function renderDeckCarousel() {
+    const container = document.getElementById('deck-carousel');
+    if (!container) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const stats = {};
+    specialties.forEach(s => {
+        stats[s.slug] = { pending: 0, newHard: 0 };
+    });
+
+    allFlashcards.forEach(card => {
+        const st = stats[card.specialty];
+        if (!st) return;
+        if (!card.lastReviewed || card.difficulty === 'hard') {
+            st.newHard++;
+        }
+        if (card.nextReview && new Date(card.nextReview) <= today) {
+            st.pending++;
+        }
+    });
+
+    container.innerHTML = '';
+    specialties.forEach(s => {
+        const card = document.createElement('div');
+        card.className = 'deck-card';
+
+        const icon = document.createElement('span');
+        icon.className = 'deck-icon';
+        icon.textContent = s.emoji;
+        if (stats[s.slug].pending > 0) {
+            icon.classList.add('pending');
+        }
+
+        const title = document.createElement('span');
+        title.className = 'deck-title';
+        title.textContent = s.name;
+
+        const badge = document.createElement('span');
+        badge.className = 'deck-badge';
+        const count = stats[s.slug].newHard;
+        if (count > 0) {
+            badge.textContent = count;
+        } else {
+            badge.style.display = 'none';
+        }
+
+        card.appendChild(icon);
+        card.appendChild(title);
+        card.appendChild(badge);
+        card.addEventListener('click', () => {
+            window.location.href = `flashcards.html?specialty=${s.slug}`;
+        });
+        container.appendChild(card);
+    });
+}
+
 // Initialize flashcards page
 function initFlashcardsPage() {
     populateSpecialtySelect();
@@ -538,6 +595,7 @@ function initFlashcardsPage() {
 function initHomePage() {
     loadTheme();
     renderSpecialtyCards();
+    renderDeckCarousel();
     loadProfilePic();
     loadUserName();
     renderProgressChart();

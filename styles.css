@@ -563,56 +563,52 @@ body.dark-mode .md-audio {
     margin-bottom: 30px;
 }
 
-#deck-editor ul {
-    list-style: none;
-    padding-left: 0;
-}
-
-#deck-editor ul ul {
-    margin-left: 10px;
-}
-
-#deck-editor li {
-    margin: 2px 0;
-}
-
-#deck-editor .deck-row {
+.deck-carousel {
     display: flex;
-    align-items: center;
-    gap: 4px;
-    cursor: grab;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 10px;
+    scroll-behavior: smooth;
 }
 
-#deck-editor .dragging .deck-row {
-    cursor: grabbing;
+.deck-card {
+    position: relative;
+    flex: 0 0 auto;
+    min-width: 120px;
+    text-align: center;
+    background: var(--card-background);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    cursor: pointer;
+    transition: transform 0.2s;
 }
 
-#deck-editor .icon-btn {
-    width: 20px;
-    height: 20px;
-    border: none;
-    border-radius: 4px;
-    background: var(--secondary-color);
+.deck-card:hover {
+    transform: translateY(-4px);
+}
+
+.deck-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.deck-icon.pending {
+    color: var(--danger-color);
+}
+
+.deck-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--warning-color);
     color: #fff;
-    font-size: 0.7rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 0.75rem;
 }
 
-#deck-editor .icon-btn:hover {
-    background: var(--primary-color);
-}
-
-#deck-editor .arrow {
-    user-select: none;
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 0;
-    font: inherit;
-}
 
 .banner {
     padding: 10px;
