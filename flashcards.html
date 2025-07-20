@@ -55,6 +55,14 @@
                 <button class="difficulty-btn medium" data-difficulty="medium">Medio</button>
                 <button class="difficulty-btn hard" data-difficulty="hard">Difícil</button>
             </div>
+
+            <div class="manage-buttons">
+                <button id="edit-card-btn" class="small-btn">Editar</button>
+                <button id="delete-card-btn" class="small-btn">Eliminar</button>
+                <button id="export-btn" class="small-btn">Exportar</button>
+                <button id="import-btn" class="small-btn">Importar</button>
+                <input type="file" id="import-input" accept="application/json" style="display:none">
+            </div>
         </main>
 
         <div class="add-card-form">
@@ -65,10 +73,26 @@
             <div class="form-group">
                 <textarea id="new-answer" placeholder="Respuesta" class="form-textarea"></textarea>
             </div>
+            <div class="form-group">
+                <select id="new-specialty" class="form-input">
+                    <option value="">Especialidad</option>
+                    <option value="medicina-interna">Medicina Interna</option>
+                    <option value="pediatria">Pediatría</option>
+                    <option value="gineco-obstetricia">Ginecología y Obstetricia</option>
+                    <option value="cirugia">Cirugía</option>
+                    <option value="atls">ATLS</option>
+                    <option value="acls">ACLS</option>
+                </select>
+            </div>
             <button id="add-card-btn" class="primary">Agregar Tarjeta</button>
         </div>
     </div>
 
     <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
 </body>
 </html>
