@@ -165,6 +165,23 @@ const defaultTopicMap = {
         'Genética y Errores Innatos del Metabolismo',
         'Toxicología Pediátrica'
     ],
+    'gineco-obstetricia': [
+        'Atención Prenatal',
+        'Trabajo de Parto y Parto Normal',
+        'Emergencias Obstétricas (hemorragia, preeclampsia, eclampsia)',
+        'Puerperio y Lactancia',
+        'Planificación Familiar y Anticoncepción',
+        'Infertilidad y Reproducción Asistida',
+        'Oncología Ginecológica',
+        'Endometriosis y Dolor Pélvico Crónico',
+        'Uroginecología y Piso Pélvico',
+        'Miomas, Quistes y Tumores Benignos',
+        'Endocrinología Reproductiva',
+        'Menopausia y Terapia Hormonal',
+        'Infecciones Ginecológicas',
+        'Patología Mamaria Benigna y Cancer de Mama',
+        'Materno-Fetal (malformaciones, RCIU)'
+    ],
     'cirugia': [
         'Trauma'
     ]
