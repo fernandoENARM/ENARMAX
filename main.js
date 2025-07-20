@@ -342,10 +342,18 @@
     const row = document.createElement('div');
     row.className = 'deck-row';
 
-    const arrow = document.createElement('span');
+    const arrow = document.createElement('button');
     arrow.className = 'arrow';
+    arrow.setAttribute('type', 'button');
+    arrow.setAttribute('aria-label', 'Expandir o contraer');
     arrow.textContent = node.children && node.children.length ? '\u25BE' : '';
     arrow.addEventListener('click', () => toggle(li));
+    arrow.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        toggle(li);
+      }
+    });
 
     const icon = document.createElement('span');
     icon.textContent = node.type==='deck'?'\uD83D\uDCC1':(node.type==='subdeck'?'\uD83D\uDCD2':'\uD83D\uDCC4');
