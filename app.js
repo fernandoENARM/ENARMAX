@@ -320,12 +320,13 @@ function renderWeakTopics() {
 }
 
 // ---- Study Heatmap ----
-function logReviewResult(difficulty) {
+function logReviewResult(difficulty, question) {
     const todayKey = new Date().toISOString().slice(0, 10);
     const history = JSON.parse(localStorage.getItem('studyHistory') || '{}');
-    const entry = history[todayKey] || { reviews: 0, correct: 0 };
+    const entry = history[todayKey] || { reviews: 0, correct: 0, cards: [] };
     entry.reviews++;
     if (difficulty !== 'hard') entry.correct++;
+    if (question) entry.cards.push(question);
     history[todayKey] = entry;
     localStorage.setItem('studyHistory', JSON.stringify(history));
 }
@@ -344,17 +345,18 @@ function getStudyData() {
         const rec = history[key];
         if (rec) {
             const accuracy = rec.reviews ? Math.round((rec.correct / rec.reviews) * 100) : 0;
-            data.push({ date: key, reviews: rec.reviews, accuracy });
+            data.push({ date: key, reviews: rec.reviews, accuracy, cards: rec.cards || [] });
         } else {
-            data.push({ date: key, reviews: 0 });
+            data.push({ date: key, reviews: 0, cards: [] });
         }
     }
     return data;
 }
 
 function getLevelClass(rev) {
-    if (rev >= 11) return 'level-3';
-    if (rev >= 6) return 'level-2';
+    if (rev >= 11) return 'level-4';
+    if (rev >= 6) return 'level-3';
+    if (rev >= 3) return 'level-2';
     if (rev >= 1) return 'level-1';
     return 'level-0';
 }
@@ -362,9 +364,11 @@ function getLevelClass(rev) {
 function renderStudyHeatmap(data) {
     const container = document.getElementById('study-heatmap');
     const metrics = document.getElementById('heatmap-metrics');
+    const legend = document.getElementById('heatmap-legend');
     if (!container || !metrics) return;
     container.innerHTML = '';
     metrics.innerHTML = '';
+    if (legend) legend.innerHTML = '';
 
     const monthsDiv = document.createElement('div');
     monthsDiv.className = 'months';
@@ -388,9 +392,10 @@ function renderStudyHeatmap(data) {
         const cell = document.createElement('div');
         cell.className = 'heatmap-cell ' + getLevelClass(item.reviews);
         cell.tabIndex = 0;
-        const localDate = date.toLocaleDateString();
-        const accText = item.accuracy !== undefined ? ` \u00B7 ${item.accuracy}% de aciertos` : '';
-        cell.title = `${item.reviews} repasos el ${localDate}${accText}`;
+        const accText = item.accuracy !== undefined ? ` \u2022 ${item.accuracy}% aciertos` : '';
+        cell.title = item.reviews > 0
+            ? `${item.reviews} repasos${accText}`
+            : 'Sin repasos';
         cell.style.gridRow = (date.getDay() + 1);
         cell.style.gridColumn = (week + 1);
         cell.addEventListener('click', () => openDayModal(item.date));
@@ -425,10 +430,37 @@ function renderStudyHeatmap(data) {
         `<div>Racha hist\xF3rica: ${longest} d\xEDas</div>` +
         `<div>Total de repasos: ${total}</div>` +
         `<div>Exactitud promedio: ${avgAcc}%</div>`;
+
+    if (legend) {
+        legend.innerHTML = `0 <div class="box level-1"></div><div class="box level-2"></div><div class="box level-3"></div><div class="box level-4"></div> 11+`;
+    }
 }
 
 function openDayModal(date) {
-    alert(`Tarjetas repasadas el ${new Date(date).toLocaleDateString()}`);
+    const history = JSON.parse(localStorage.getItem('studyHistory') || '{}');
+    const entry = history[date];
+    const modal = document.getElementById('day-modal');
+    const title = document.getElementById('modal-title');
+    const list = document.getElementById('modal-list');
+    if (!modal || !title || !list || !entry) return;
+    title.textContent = new Date(date).toLocaleDateString();
+    list.innerHTML = '';
+    (entry.cards || []).forEach(q => {
+        const li = document.createElement('li');
+        li.textContent = q;
+        list.appendChild(li);
+    });
+    if (list.children.length === 0) {
+        const li = document.createElement('li');
+        li.textContent = 'Sin tarjetas';
+        list.appendChild(li);
+    }
+    modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeDayModal() {
+    const modal = document.getElementById('day-modal');
+    if (modal) modal.setAttribute('aria-hidden', 'true');
 }
 
 function populateSpecialtySelect() {
@@ -511,6 +543,14 @@ function initHomePage() {
     renderProgressChart();
     renderWeakTopics();
     renderStudyHeatmap(getStudyData());
+    const closeModalBtn = document.getElementById('close-day-modal');
+    const dayModal = document.getElementById('day-modal');
+    if (closeModalBtn && dayModal) {
+        closeModalBtn.addEventListener('click', () => dayModal.setAttribute('aria-hidden', 'true'));
+        dayModal.addEventListener('click', e => {
+            if (e.target === dayModal) dayModal.setAttribute('aria-hidden', 'true');
+        });
+    }
     if (changePicBtn && profilePicInput) {
         changePicBtn.addEventListener('click', () => profilePicInput.click());
         profilePicInput.addEventListener('change', handleProfilePicChange);
@@ -656,7 +696,7 @@ function setDifficulty(difficulty) {
     const currentCard = flashcards[currentCardIndex];
     const now = new Date();
 
-    logReviewResult(difficulty);
+    logReviewResult(difficulty, currentCard.question);
 
     // Update card data
     currentCard.difficulty = difficulty;

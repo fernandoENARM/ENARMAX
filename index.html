@@ -40,6 +40,7 @@
         <section class="heatmap-panel">
             <div id="study-heatmap" class="study-heatmap"></div>
             <div id="heatmap-metrics" class="heatmap-metrics"></div>
+            <div id="heatmap-legend" class="heatmap-legend"></div>
         </section>
 
         <section class="deck-management">
@@ -59,5 +60,12 @@
             navigator.serviceWorker.register('sw.js');
         }
     </script>
+    <div id="day-modal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <button id="close-day-modal" class="close-btn" aria-label="Cerrar">&times;</button>
+            <h3 id="modal-title"></h3>
+            <ul id="modal-list"></ul>
+        </div>
+    </div>
 </body>
 </html>
