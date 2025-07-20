@@ -3,70 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repaso de Tarjetas Médicas</title>
+    <title>Especialidades Médicas</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
+    <div class="container home">
         <header>
-            <h1>Repaso de Tarjetas Médicas</h1>
-            <button id="theme-toggle" class="theme-toggle">Modo Noche</button>
-            <div class="stats">
-                <div class="stat-card">
-                    <span class="stat-number" id="today-count">0</span>
-                    <span class="stat-label">Hoy</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number" id="pending-count">0</span>
-                    <span class="stat-label">Pendientes</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number" id="new-count">0</span>
-                    <span class="stat-label">Nuevas</span>
-                </div>
-            </div>
+            <h1>Selecciona una Especialidad</h1>
         </header>
-
-        <main>
-            <div class="flashcard-container">
-                <div class="flashcard" id="flashcard">
-                    <div class="flashcard-inner">
-                        <div class="flashcard-front">
-                            <p id="question">Cargando preguntas...</p>
-                        </div>
-                        <div class="flashcard-back">
-                            <p id="answer"></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="controls">
-                <button id="prev-btn" class="control-btn" disabled>← Anterior</button>
-                <button id="flip-btn" class="control-btn primary">Mostrar Respuesta</button>
-                <button id="next-btn" class="control-btn primary">Siguiente →</button>
-            </div>
-
-            <div class="difficulty-buttons">
-                <button class="difficulty-btn easy" data-difficulty="easy">Fácil</button>
-                <button class="difficulty-btn medium" data-difficulty="medium">Medio</button>
-                <button class="difficulty-btn hard" data-difficulty="hard">Difícil</button>
-            </div>
+        <main class="specialty-grid">
+            <a href="flashcards.html?specialty=medicina-interna" class="specialty-card">
+                <span class="emoji">🩺</span>
+                <span>Medicina Interna</span>
+            </a>
+            <a href="flashcards.html?specialty=pediatria" class="specialty-card">
+                <span class="emoji">👶</span>
+                <span>Pediatría</span>
+            </a>
+            <a href="flashcards.html?specialty=gineco-obstetricia" class="specialty-card">
+                <span class="emoji">🤰</span>
+                <span>Ginecología y Obstetricia</span>
+            </a>
+            <a href="flashcards.html?specialty=cirugia" class="specialty-card">
+                <span class="emoji">🔪</span>
+                <span>Cirugía</span>
+            </a>
+            <a href="flashcards.html?specialty=atls" class="specialty-card">
+                <span class="emoji">🚑</span>
+                <span>ATLS</span>
+            </a>
+            <a href="flashcards.html?specialty=acls" class="specialty-card">
+                <span class="emoji">❤️</span>
+                <span>ACLS</span>
+            </a>
         </main>
-
-        <div class="add-card-form">
-            <h3>Agregar Nueva Tarjeta</h3>
-            <div class="form-group">
-                <input type="text" id="new-question" placeholder="Pregunta" class="form-input">
-            </div>
-            <div class="form-group">
-                <textarea id="new-answer" placeholder="Respuesta" class="form-textarea"></textarea>
-            </div>
-            <button id="add-card-btn" class="primary">Agregar Tarjeta</button>
-        </div>
     </div>
-
-    <script src="app.js"></script>
 </body>
 </html>
