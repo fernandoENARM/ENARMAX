@@ -242,7 +242,7 @@ function setDifficultyButtonsEnabled(enabled) {
 
 function updateThemeIcon(isDark) {
     if (!themeToggle) return;
-    themeToggle.textContent = isDark ? '☀️' : '🌙';
+    themeToggle.innerHTML = isDark ? '☀️ Claro' : '🌙 Oscuro';
 }
 
 function loadTheme() {
