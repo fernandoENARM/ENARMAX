@@ -87,6 +87,37 @@
     }
 
     initAdaptiveExam();
+
+    const menuBtn = document.getElementById('menu-btn');
+    const sidePanel = document.getElementById('side-panel');
+    const overlay = document.getElementById('side-overlay');
+
+    function toggleMenu(forceClose) {
+      if (!sidePanel || !overlay || !menuBtn) return;
+      const open = forceClose ? false : !sidePanel.classList.contains('open');
+      if (open) {
+        sidePanel.classList.add('open');
+        overlay.classList.add('open');
+        menuBtn.setAttribute('aria-label', 'Cerrar menú');
+        const firstLink = sidePanel.querySelector('a');
+        if (firstLink) firstLink.focus();
+      } else {
+        sidePanel.classList.remove('open');
+        overlay.classList.remove('open');
+        menuBtn.setAttribute('aria-label', 'Abrir menú');
+        menuBtn.focus();
+      }
+    }
+
+    if(menuBtn && overlay){
+      menuBtn.addEventListener('click', () => toggleMenu());
+      overlay.addEventListener('click', () => toggleMenu(true));
+      document.addEventListener('keydown', e => {
+        if(e.key === 'Escape' && sidePanel.classList.contains('open')){
+          toggleMenu(true);
+        }
+      });
+    }
   });
 
   // ----- Adaptive exam mode -----

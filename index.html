@@ -9,6 +9,11 @@
 </head>
 <body>
     <button id="theme-toggle" class="theme-toggle" aria-label="Cambiar tema">🌙</button>
+    <button id="menu-btn" class="menu-btn" aria-label="Abrir menú">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
     <div class="container home">
         <header>
             <h1>Selecciona una Especialidad</h1>
@@ -57,6 +62,13 @@
             navigator.serviceWorker.register('sw.js');
         }
     </script>
+    <nav id="side-panel" class="side-panel" role="navigation" aria-hidden="true">
+        <h2>Menú</h2>
+        <ul>
+            <li><a href="index.html">Inicio</a></li>
+        </ul>
+    </nav>
+    <div id="side-overlay" class="side-overlay"></div>
     <div id="day-modal" class="modal" aria-hidden="true">
         <div class="modal-content">
             <button id="close-day-modal" class="close-btn" aria-label="Cerrar">&times;</button>
