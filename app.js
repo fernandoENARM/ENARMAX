@@ -302,6 +302,118 @@ function renderWeakTopics() {
     });
 }
 
+// ---- Study Heatmap ----
+function logReviewResult(difficulty) {
+    const todayKey = new Date().toISOString().slice(0, 10);
+    const history = JSON.parse(localStorage.getItem('studyHistory') || '{}');
+    const entry = history[todayKey] || { reviews: 0, correct: 0 };
+    entry.reviews++;
+    if (difficulty !== 'hard') entry.correct++;
+    history[todayKey] = entry;
+    localStorage.setItem('studyHistory', JSON.stringify(history));
+}
+
+function getStudyData() {
+    const history = JSON.parse(localStorage.getItem('studyHistory') || '{}');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const start = new Date(today);
+    start.setDate(today.getDate() - 364);
+    const data = [];
+    for (let i = 0; i < 365; i++) {
+        const d = new Date(start);
+        d.setDate(start.getDate() + i);
+        const key = d.toISOString().slice(0, 10);
+        const rec = history[key];
+        if (rec) {
+            const accuracy = rec.reviews ? Math.round((rec.correct / rec.reviews) * 100) : 0;
+            data.push({ date: key, reviews: rec.reviews, accuracy });
+        } else {
+            data.push({ date: key, reviews: 0 });
+        }
+    }
+    return data;
+}
+
+function getLevelClass(rev) {
+    if (rev >= 11) return 'level-3';
+    if (rev >= 6) return 'level-2';
+    if (rev >= 1) return 'level-1';
+    return 'level-0';
+}
+
+function renderStudyHeatmap(data) {
+    const container = document.getElementById('study-heatmap');
+    const metrics = document.getElementById('heatmap-metrics');
+    if (!container || !metrics) return;
+    container.innerHTML = '';
+    metrics.innerHTML = '';
+
+    const monthsDiv = document.createElement('div');
+    monthsDiv.className = 'months';
+    const cellsDiv = document.createElement('div');
+    cellsDiv.className = 'cells';
+    container.appendChild(monthsDiv);
+    container.appendChild(cellsDiv);
+
+    let longest = 0;
+    let current = 0;
+    let total = 0;
+    let accSum = 0;
+    let accCount = 0;
+    const start = new Date(data[0].date);
+    const startOffset = start.getDay();
+    const monthLabels = [];
+
+    data.forEach((item, idx) => {
+        const date = new Date(item.date);
+        const week = Math.floor((idx + startOffset) / 7);
+        const cell = document.createElement('div');
+        cell.className = 'heatmap-cell ' + getLevelClass(item.reviews);
+        cell.tabIndex = 0;
+        const localDate = date.toLocaleDateString();
+        const accText = item.accuracy !== undefined ? ` \u00B7 ${item.accuracy}% de aciertos` : '';
+        cell.title = `${item.reviews} repasos el ${localDate}${accText}`;
+        cell.style.gridRow = (date.getDay() + 1);
+        cell.style.gridColumn = (week + 1);
+        cell.addEventListener('click', () => openDayModal(item.date));
+        cellsDiv.appendChild(cell);
+
+        if (item.reviews > 0) {
+            current += 1;
+            longest = Math.max(longest, current);
+            total += item.reviews;
+            if (item.accuracy !== undefined) {
+                accSum += item.accuracy;
+                accCount++;
+            }
+        } else {
+            current = 0;
+        }
+
+        if ((date.getDate() === 1 || idx === 0) && !monthLabels[week]) {
+            monthLabels[week] = date.toLocaleString('default', { month: 'short' });
+        }
+    });
+
+    for (let i = 0; i < 53; i++) {
+        const label = document.createElement('div');
+        label.textContent = monthLabels[i] || '';
+        monthsDiv.appendChild(label);
+    }
+
+    const avgAcc = accCount ? (accSum / accCount).toFixed(1) : 'N/A';
+    metrics.innerHTML =
+        `<div>Racha actual: ${current} d\xEDas</div>` +
+        `<div>Racha hist\xF3rica: ${longest} d\xEDas</div>` +
+        `<div>Total de repasos: ${total}</div>` +
+        `<div>Exactitud promedio: ${avgAcc}%</div>`;
+}
+
+function openDayModal(date) {
+    alert(`Tarjetas repasadas el ${new Date(date).toLocaleDateString()}`);
+}
+
 function populateSpecialtySelect() {
     if (!newSpecialtySelect) return;
     newSpecialtySelect.innerHTML = '';
@@ -381,6 +493,7 @@ function initHomePage() {
     loadUserName();
     renderProgressChart();
     renderWeakTopics();
+    renderStudyHeatmap(getStudyData());
     if (changePicBtn && profilePicInput) {
         changePicBtn.addEventListener('click', () => profilePicInput.click());
         profilePicInput.addEventListener('change', handleProfilePicChange);
@@ -512,10 +625,12 @@ function flipCard() {
 // Set difficulty and schedule next review
 function setDifficulty(difficulty) {
     if (flashcards.length === 0 || !isFlipped) return;
-    
+
     const currentCard = flashcards[currentCardIndex];
     const now = new Date();
-    
+
+    logReviewResult(difficulty);
+
     // Update card data
     currentCard.difficulty = difficulty;
     currentCard.lastReviewed = now.toISOString();
@@ -537,6 +652,8 @@ function setDifficulty(difficulty) {
     // Save and update
     saveFlashcards();
     setDifficultyButtonsEnabled(false);
+
+    renderStudyHeatmap(getStudyData());
     
     // Show next card after a short delay
     setTimeout(() => {
