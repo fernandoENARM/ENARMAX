@@ -685,3 +685,47 @@ body.dark-mode .md-audio {
 .side-overlay.open {
     display: block;
 }
+
+/* Study session */
+#study-session {
+    text-align: center;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.prompt-area,
+.answer-area {
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+}
+
+.answer-area {
+    color: #2d6a4f;
+    text-decoration: underline;
+    animation: fade-in 0.3s ease;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background: var(--card-background-alt);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.progress-bar div {
+    height: 100%;
+    width: 0;
+    background: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

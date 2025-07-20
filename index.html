@@ -53,6 +53,28 @@
             <div id="deck-carousel" class="deck-carousel"></div>
         </section>
     </div>
+    <section id="study-session" hidden>
+        <small id="session-header"></small>
+        <div id="card-front" class="prompt-area"></div>
+        <div id="card-back" class="answer-area" hidden></div>
+        <button id="show-answer-btn" class="primary">Mostrar respuesta</button>
+        <div id="difficulty-group" class="difficulty-buttons" hidden>
+            <button class="difficulty-btn easy" data-quality="5">Fácil</button>
+            <button class="difficulty-btn medium" data-quality="4">Intermedio</button>
+            <button class="difficulty-btn hard" data-quality="2">Difícil / Fallé</button>
+        </div>
+        <div id="session-progress" class="progress-bar">
+            <div id="session-progress-fill"></div>
+        </div>
+        <button id="exit-session-btn" class="small-btn">Salir</button>
+    </section>
+    <div id="session-modal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <h3>¡Sesión completada!</h3>
+            <p id="session-summary"></p>
+            <button id="session-back-btn" class="primary">Volver al tema</button>
+        </div>
+    </div>
     <script src="js/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" crossorigin="anonymous"></script>
     <script src="main.js"></script>

@@ -904,6 +904,162 @@ window.addEventListener('beforeunload', () => {
     document.removeEventListener('keydown', handleKeyDown);
 });
 
+// -------- Study session (SM-2) ---------
+const studyState = {
+    cards: [],
+    currentIndex: 0,
+    correct: 0,
+    incorrect: 0,
+    topic: ''
+};
+
+function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function scheduleCard(data, quality) {
+    data.repetitions = data.repetitions || 0;
+    data.interval = data.interval || 0;
+    data.ease = data.ease || 2.5;
+    if (quality < 3) {
+        data.repetitions = 0;
+        data.interval = 1;
+    } else {
+        if (data.repetitions === 0) data.interval = 1;
+        else if (data.repetitions === 1) data.interval = 6;
+        else data.interval = Math.round(data.interval * data.ease);
+        data.ease += 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02);
+        if (data.ease < 1.3) data.ease = 1.3;
+        data.repetitions += 1;
+    }
+    const next = new Date();
+    next.setDate(next.getDate() + data.interval);
+    data.nextReview = next.toISOString();
+    data.lastReviewed = new Date().toISOString();
+    data.quality = quality;
+    return data;
+}
+
+function startStudySession(topicId) {
+    const section = document.getElementById('study-session');
+    const container = document.querySelector('.container.home');
+    if (!section) return;
+    studyState.cards = allFlashcards.filter(c => c.specialty === topicId);
+    shuffleArray(studyState.cards);
+    studyState.currentIndex = 0;
+    studyState.correct = 0;
+    studyState.incorrect = 0;
+    studyState.topic = specialtyNames[topicId] || topicId;
+    if (container) container.style.display = 'none';
+    section.hidden = false;
+    loadStudyCard();
+}
+
+function updateSessionHeader() {
+    const header = document.getElementById('session-header');
+    if (header) {
+        header.textContent = `Tarjeta ${studyState.currentIndex + 1} / ${studyState.cards.length} • Tema: ${studyState.topic}`;
+    }
+    const fill = document.getElementById('session-progress-fill');
+    if (fill) {
+        fill.style.width = `${(studyState.currentIndex / studyState.cards.length) * 100}%`;
+    }
+}
+
+function loadStudyCard() {
+    if (studyState.currentIndex >= studyState.cards.length) {
+        showStudyComplete();
+        return;
+    }
+    const front = document.getElementById('card-front');
+    const back = document.getElementById('card-back');
+    const showBtn = document.getElementById('show-answer-btn');
+    const diffGroup = document.getElementById('difficulty-group');
+
+    const card = studyState.cards[studyState.currentIndex];
+    if (front) front.textContent = card.question;
+    if (back) {
+        if (typeof window.renderMarkdown === 'function') {
+            window.renderMarkdown(card.answer, back);
+        } else {
+            back.textContent = card.answer;
+        }
+        back.hidden = true;
+    }
+    if (showBtn) showBtn.hidden = false;
+    if (diffGroup) diffGroup.hidden = true;
+    updateSessionHeader();
+}
+
+function showStudyAnswer() {
+    const back = document.getElementById('card-back');
+    const showBtn = document.getElementById('show-answer-btn');
+    const diffGroup = document.getElementById('difficulty-group');
+    if (back) back.hidden = false;
+    if (showBtn) showBtn.hidden = true;
+    if (diffGroup) {
+        diffGroup.hidden = false;
+        const first = diffGroup.querySelector('button');
+        if (first) first.focus();
+    }
+}
+
+function registerDifficulty(quality) {
+    const card = studyState.cards[studyState.currentIndex];
+    card.sm2 = scheduleCard(card.sm2 || {}, quality);
+    const idx = allFlashcards.indexOf(card);
+    if (idx !== -1) allFlashcards[idx] = card;
+    saveFlashcards();
+    if (quality >= 4) studyState.correct++; else studyState.incorrect++;
+    studyState.currentIndex++;
+    loadStudyCard();
+}
+
+function showStudyComplete() {
+    const fill = document.getElementById('session-progress-fill');
+    if (fill) fill.style.width = '100%';
+    const modal = document.getElementById('session-modal');
+    const sum = document.getElementById('session-summary');
+    if (sum) sum.textContent = `Aciertos: ${studyState.correct} • Errores: ${studyState.incorrect}`;
+    if (modal) modal.setAttribute('aria-hidden', 'false');
+}
+
+function exitStudySession() {
+    const section = document.getElementById('study-session');
+    const container = document.querySelector('.container.home');
+    if (section) section.hidden = true;
+    if (container) container.style.display = '';
+    const modal = document.getElementById('session-modal');
+    if (modal) modal.setAttribute('aria-hidden', 'true');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const showBtn = document.getElementById('show-answer-btn');
+    if (showBtn) {
+        showBtn.addEventListener('click', showStudyAnswer);
+        showBtn.addEventListener('keydown', e => {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                showStudyAnswer();
+            }
+        });
+    }
+    const diffGroup = document.getElementById('difficulty-group');
+    if (diffGroup) {
+        diffGroup.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => registerDifficulty(parseInt(btn.dataset.quality)));
+        });
+    }
+    const exitBtn = document.getElementById('exit-session-btn');
+    const backBtn = document.getElementById('session-back-btn');
+    if (exitBtn) exitBtn.addEventListener('click', exitStudySession);
+    if (backBtn) backBtn.addEventListener('click', exitStudySession);
+});
+
 // Initialize the application when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     loadFlashcards();
