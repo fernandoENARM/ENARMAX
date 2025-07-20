@@ -403,11 +403,22 @@ function renderStudyHeatmap(data) {
     }
 
     const avgAcc = accCount ? (accSum / accCount).toFixed(1) : 'N/A';
-    metrics.innerHTML =
-        `<div>Racha actual: ${current} d\xEDas</div>` +
-        `<div>Racha hist\xF3rica: ${longest} d\xEDas</div>` +
-        `<div>Total de repasos: ${total}</div>` +
-        `<div>Exactitud promedio: ${avgAcc}%</div>`;
+
+    const dataMetrics = [
+        { icon: '🔥', value: current, label: 'Racha' },
+        { icon: '📚', value: total, label: 'Total' },
+        { icon: '🎯', value: `${avgAcc}%`, label: 'Exactitud' }
+    ];
+
+    dataMetrics.forEach(m => {
+        const card = document.createElement('div');
+        card.className = 'metric-card';
+        card.innerHTML =
+            `<span class="metric-icon">${m.icon}</span>` +
+            `<span class="metric-number">${m.value}</span>` +
+            `<span class="metric-label">${m.label}</span>`;
+        metrics.appendChild(card);
+    });
 }
 
 function openDayModal(date) {
