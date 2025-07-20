@@ -147,6 +147,9 @@ const deleteCardBtn = document.getElementById('delete-card-btn');
 const exportBtn = document.getElementById('export-btn');
 const importBtn = document.getElementById('import-btn');
 const importInput = document.getElementById('import-input');
+const exportApkgBtn = document.getElementById('export-apkg-btn');
+const importApkgBtn = document.getElementById('import-apkg-btn');
+const importApkgInput = document.getElementById('import-apkg-input');
 const themeToggle = document.getElementById('theme-toggle');
 const specialtyTitle = document.getElementById("specialty-title");
 // Home page elements
@@ -473,6 +476,31 @@ function initFlashcardsPage() {
     if (importBtn && importInput) {
         importBtn.addEventListener('click', () => importInput.click());
         importInput.addEventListener('change', importFlashcards);
+    }
+    if (exportApkgBtn) {
+        exportApkgBtn.addEventListener('click', async () => {
+            const deck = getQueryParam('specialty');
+            const cards = allFlashcards.filter(c => c.specialty === deck);
+            await window.exportDeckToApkg(deck || 'deck', cards);
+        });
+    }
+    if (importApkgBtn && importApkgInput) {
+        importApkgBtn.addEventListener('click', () => importApkgInput.click());
+        importApkgInput.addEventListener('change', async e => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const cards = await window.importApkgFile(file);
+            if(cards.length){
+                allFlashcards = allFlashcards.concat(cards);
+                const current = getQueryParam('specialty');
+                if(current && current === cards[0].specialty){
+                    flashcards = flashcards.concat(cards);
+                    showCard();
+                }
+                saveFlashcards();
+            }
+            importApkgInput.value = '';
+        });
     }
     if (prevBtn) prevBtn.addEventListener("click", showPreviousCard);
     if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
