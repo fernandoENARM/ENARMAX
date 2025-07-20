@@ -597,11 +597,11 @@ function openTopicDetail(topic) {
     startStudyBtn.setAttribute('aria-label', `Comenzar a estudiar el tema ${topic.name}`);
     startStudyBtn.textContent = 'Comenzar a estudiar';
     startStudyBtn.onclick = () => {
-        alert(`Iniciando estudio de ${topic.name}`);
         topic.reviews += 1;
         metricReviews.textContent = topic.reviews;
         saveTopics();
         sessionStorage.setItem('topicId', topic.id);
+        window.location.href = `study.html?topicId=${topic.id}`;
     };
     setTimeout(() => topicDetailTitle.focus(), 0);
 }
