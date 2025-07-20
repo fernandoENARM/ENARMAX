@@ -477,3 +477,22 @@ body.dark-mode .level-3 { background-color: #4338ca; }
     font-size: 0.9rem;
     margin-top: 5px;
 }
+
+/* Markdown media */
+.md-image {
+    max-width: 100%;
+    border-radius: var(--border-radius);
+}
+
+.latex-block {
+    margin: 1em 0;
+}
+
+.md-audio {
+    width: 100%;
+    margin: 10px 0;
+}
+
+body.dark-mode .md-audio {
+    filter: invert(1) hue-rotate(180deg);
+}

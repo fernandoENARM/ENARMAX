@@ -561,7 +561,11 @@ function showCard() {
 
     const currentCard = flashcards[currentCardIndex];
     questionElement.textContent = currentCard.question;
-    answerElement.textContent = currentCard.answer;
+    if (typeof window.renderMarkdown === 'function') {
+        window.renderMarkdown(currentCard.answer, answerElement);
+    } else {
+        answerElement.textContent = currentCard.answer;
+    }
 
     const categories = ['definicion','epidemiologia','etiologia','fisiopatologia','cuadro-clinico','diagnostico','tratamiento','complicaciones'];
     categories.forEach(c => flashcard.classList.remove(c));
