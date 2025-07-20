@@ -478,24 +478,6 @@ function populateSpecialtySelect() {
     });
 }
 
-function renderSpecialtyCards() {
-    const grid = document.getElementById('specialty-grid');
-    if (!grid) return;
-    grid.innerHTML = '';
-    specialties.forEach(s => {
-        const card = document.createElement('a');
-        card.href = `flashcards.html?specialty=${s.slug}`;
-        card.className = 'specialty-card';
-        const emoji = document.createElement('span');
-        emoji.className = 'emoji';
-        emoji.textContent = s.emoji;
-        const name = document.createElement('span');
-        name.textContent = s.name;
-        card.appendChild(emoji);
-        card.appendChild(name);
-        grid.appendChild(card);
-    });
-}
 
 function renderDeckCarousel() {
     const container = document.getElementById('deck-carousel');
@@ -594,7 +576,6 @@ function initFlashcardsPage() {
 
 function initHomePage() {
     loadTheme();
-    renderSpecialtyCards();
     renderDeckCarousel();
     loadProfilePic();
     loadUserName();

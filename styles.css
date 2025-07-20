@@ -301,40 +301,10 @@ h1 {
     }
 }
 
-/* Home page specialty grid */
+/* Home page */
 .home header {
     text-align: center;
     margin-bottom: 40px;
-}
-
-.specialty-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 20px;
-}
-
-.specialty-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    color: var(--text-color);
-    background: var(--card-background);
-    padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: none;
-    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
-}
-
-.specialty-card:hover {
-    transform: scale(1.05);
-    box-shadow: var(--box-shadow);
-}
-
-.specialty-card .emoji {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
 }
 
 .back-link {
