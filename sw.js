@@ -9,7 +9,11 @@ const ASSETS = [
   'app.js',
   'cloze.js',
   'main.js',
-  'js/chart.min.js'
+  'js/chart.min.js',
+  'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js',
+  'https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js',
+  'https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css',
+  'https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js'
 ];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)));
