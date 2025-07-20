@@ -88,17 +88,27 @@ const difficultyBtns = document.querySelectorAll('.difficulty-btn');
 const addCardBtn = document.getElementById('add-card-btn');
 const newQuestionInput = document.getElementById('new-question');
 const newAnswerInput = document.getElementById('new-answer');
+const newSpecialtySelect = document.getElementById('new-specialty');
+const editCardBtn = document.getElementById('edit-card-btn');
+const deleteCardBtn = document.getElementById('delete-card-btn');
+const exportBtn = document.getElementById('export-btn');
+const importBtn = document.getElementById('import-btn');
+const importInput = document.getElementById('import-input');
 const themeToggle = document.getElementById('theme-toggle');
 const specialtyTitle = document.getElementById("specialty-title");
 // Home page elements
 const profilePic = document.getElementById('profile-pic');
 const changePicBtn = document.getElementById('change-pic-btn');
 const profilePicInput = document.getElementById('profile-pic-input');
+const greeting = document.getElementById('greeting');
+const changeNameBtn = document.getElementById('change-name-btn');
+const userNameInput = document.getElementById('user-name-input');
 const progressChartCanvas = document.getElementById('progress-chart');
 const weakTopicsList = document.getElementById('weak-topics-list');
 
 const specialtyNames = {"medicina-interna":"Medicina Interna","pediatria":"Pediatría","gineco-obstetricia":"Ginecología y Obstetricia","cirugia":"Cirugía","atls":"ATLS","acls":"ACLS"};
 // App state
+let allFlashcards = [];
 let currentCardIndex = 0;
 let cardsReviewedToday = 0;
 let pendingCards = 0;
@@ -142,6 +152,24 @@ function handleProfilePicChange(e) {
         localStorage.setItem('profilePic', data);
     };
     reader.readAsDataURL(file);
+}
+
+// User name handling
+function loadUserName() {
+    const name = localStorage.getItem('userName');
+    if (name && greeting) {
+        greeting.textContent = `Hola ${name}`;
+    }
+}
+
+function handleNameChange() {
+    if (!userNameInput) return;
+    const name = userNameInput.value.trim();
+    if (name) {
+        localStorage.setItem('userName', name);
+        greeting.textContent = `Hola ${name}`;
+        userNameInput.style.display = 'none';
+    }
 }
 
 // Progress chart and weak topics
@@ -212,9 +240,12 @@ function renderWeakTopics() {
 function initFlashcardsPage() {
     const specialty = getQueryParam("specialty");
     if (specialty) {
-        flashcards = flashcards.filter(c => c.specialty === specialty);
+        flashcards = allFlashcards.filter(c => c.specialty === specialty);
         if (specialtyTitle) specialtyTitle.textContent = specialtyNames[specialty] || "";
+    } else {
+        flashcards = allFlashcards;
     }
+    currentCardIndex = 0;
     loadTheme();
     updatePendingAndNewCounts();
     updateStats();
@@ -222,6 +253,13 @@ function initFlashcardsPage() {
     if (nextBtn) nextBtn.addEventListener('click', showNextCard);
     if (flipBtn) flipBtn.addEventListener('click', flipCard);
     if (addCardBtn) addCardBtn.addEventListener('click', addNewCard);
+    if (editCardBtn) editCardBtn.addEventListener('click', editCurrentCard);
+    if (deleteCardBtn) deleteCardBtn.addEventListener('click', deleteCurrentCard);
+    if (exportBtn) exportBtn.addEventListener('click', exportFlashcards);
+    if (importBtn && importInput) {
+        importBtn.addEventListener('click', () => importInput.click());
+        importInput.addEventListener('change', importFlashcards);
+    }
     if (prevBtn) prevBtn.addEventListener("click", showPreviousCard);
     if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
 
@@ -237,11 +275,19 @@ function initFlashcardsPage() {
 function initHomePage() {
     loadTheme();
     loadProfilePic();
+    loadUserName();
     renderProgressChart();
     renderWeakTopics();
     if (changePicBtn && profilePicInput) {
         changePicBtn.addEventListener('click', () => profilePicInput.click());
         profilePicInput.addEventListener('change', handleProfilePicChange);
+    }
+    if (changeNameBtn && userNameInput) {
+        changeNameBtn.addEventListener('click', () => {
+            userNameInput.style.display = 'inline-block';
+            userNameInput.focus();
+        });
+        userNameInput.addEventListener('change', handleNameChange);
     }
 }
 
@@ -249,27 +295,31 @@ function initHomePage() {
 function loadFlashcards() {
     const savedFlashcards = localStorage.getItem('medicalFlashcards');
     if (savedFlashcards) {
-        flashcards = JSON.parse(savedFlashcards);
+        allFlashcards = JSON.parse(savedFlashcards);
+        flashcards = allFlashcards;
+    } else {
+        allFlashcards = flashcards;
     }
     updatePendingAndNewCounts();
 }
 
 // Save flashcards to localStorage
 function saveFlashcards() {
-    localStorage.setItem('medicalFlashcards', JSON.stringify(flashcards));
+    localStorage.setItem('medicalFlashcards', JSON.stringify(allFlashcards));
     updatePendingAndNewCounts();
 }
 
 // Update pending and new card counts
 function updatePendingAndNewCounts() {
-    const today = new Date().toDateString();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     pendingCards = 0;
     newCards = 0;
-    
+
     flashcards.forEach(card => {
         if (!card.lastReviewed) {
             newCards++;
-        } else if (card.nextReview && new Date(card.nextReview).toDateString() <= today) {
+        } else if (card.nextReview && new Date(card.nextReview) <= today) {
             pendingCards++;
         }
     });
@@ -359,12 +409,12 @@ function setDifficulty(difficulty) {
     currentCard.reviewCount = (currentCard.reviewCount || 0) + 1;
     
     // Calculate next review date based on difficulty
-    let daysToAdd = 1; // Default for easy
-    
-    if (difficulty === 'medium') {
-        daysToAdd = 3;
-    } else if (difficulty === 'hard') {
+    let daysToAdd = 3;
+
+    if (difficulty === 'easy') {
         daysToAdd = 7;
+    } else if (difficulty === 'hard') {
+        daysToAdd = 1;
     }
     
     const nextReviewDate = new Date(now);
@@ -389,18 +439,24 @@ function setDifficulty(difficulty) {
 function addNewCard() {
     const question = newQuestionInput.value.trim();
     const answer = newAnswerInput.value.trim();
-    
-    if (question && answer) {
+    const specialty = newSpecialtySelect ? newSpecialtySelect.value : '';
+
+    if (question && answer && specialty) {
         const newCard = {
             question,
             answer,
+            specialty,
             difficulty: 'medium',
             lastReviewed: null,
             nextReview: null,
             reviewCount: 0
         };
-        
-        flashcards.push(newCard);
+
+        allFlashcards.push(newCard);
+        const currentSpecialty = getQueryParam('specialty');
+        if (!currentSpecialty || currentSpecialty === specialty) {
+            flashcards.push(newCard);
+        }
         saveFlashcards();
         
         // Reset form
@@ -411,8 +467,70 @@ function addNewCard() {
         currentCardIndex = flashcards.length - 1;
         showCard();
     } else {
-        alert('Por favor ingresa tanto la pregunta como la respuesta.');
+        alert('Por favor ingresa la pregunta, la respuesta y la especialidad.');
     }
+}
+
+function editCurrentCard() {
+    if (flashcards.length === 0) return;
+    const currentCard = flashcards[currentCardIndex];
+    const newQuestion = prompt('Editar pregunta:', currentCard.question);
+    if (newQuestion === null) return;
+    const newAnswer = prompt('Editar respuesta:', currentCard.answer);
+    if (newAnswer === null) return;
+    currentCard.question = newQuestion.trim();
+    currentCard.answer = newAnswer.trim();
+    saveFlashcards();
+    showCard();
+}
+
+function deleteCurrentCard() {
+    if (flashcards.length === 0) return;
+    const confirmed = confirm('¿Eliminar esta tarjeta?');
+    if (!confirmed) return;
+    const card = flashcards[currentCardIndex];
+    const indexAll = allFlashcards.indexOf(card);
+    if (indexAll > -1) allFlashcards.splice(indexAll, 1);
+    flashcards.splice(currentCardIndex, 1);
+    if (currentCardIndex >= flashcards.length) currentCardIndex = flashcards.length - 1;
+    saveFlashcards();
+    showCard();
+}
+
+function exportFlashcards() {
+    const dataStr = JSON.stringify(allFlashcards, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'flashcards.json';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function importFlashcards(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        try {
+            const data = JSON.parse(ev.target.result);
+            if (Array.isArray(data)) {
+                allFlashcards = data;
+                const currentSpecialty = getQueryParam('specialty');
+                flashcards = currentSpecialty ? allFlashcards.filter(c => c.specialty === currentSpecialty) : allFlashcards;
+                currentCardIndex = 0;
+                saveFlashcards();
+                showCard();
+            } else {
+                alert('Archivo no válido');
+            }
+        } catch (err) {
+            alert('Error al importar');
+        }
+    };
+    reader.readAsText(file);
+    importInput.value = '';
 }
 
 // Handle keyboard navigation

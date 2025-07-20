@@ -17,7 +17,9 @@
             <div class="user-info">
                 <img id="profile-pic" src="https://via.placeholder.com/80" alt="Foto de perfil">
                 <div class="user-text">
-                    <h2 id="greeting">Hola Fernando</h2>
+                    <h2 id="greeting">Hola</h2>
+                    <button id="change-name-btn" class="small-btn">Cambiar nombre</button>
+                    <input type="text" id="user-name-input" class="small-input" style="display:none">
                     <button id="change-pic-btn" class="small-btn">Cambiar foto de perfil</button>
                     <input type="file" id="profile-pic-input" accept="image/*" style="display:none">
                 </div>
@@ -59,7 +61,12 @@
             </a>
         </main>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/chart.min.js"></script>
     <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
 </body>
 </html>

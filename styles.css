@@ -173,6 +173,13 @@ h1 {
     margin: 20px 0 40px;
 }
 
+.manage-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
 .difficulty-btn {
     padding: 8px 16px;
     border: none;
@@ -342,6 +349,13 @@ h1 {
     background-color: var(--secondary-color);
     color: #fff;
     cursor: pointer;
+}
+.small-input {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--secondary-color);
+    display: inline-block;
 }
 
 /* Progress panel */
