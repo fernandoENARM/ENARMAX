@@ -1,0 +1,14 @@
+{
+  "name": "enarmax",
+  "version": "1.0.0",
+  "description": "ENARMAX es una pequeña aplicación web para repasar tarjetas médicas. Las tarjetas se muestran una a una y permiten dar vuelta la carta para ver la respuesta. El avance puede marcarse según la dificultad percibida.",
+  "main": "app.js",
+  "scripts": {
+    "build": "npx tsc",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
