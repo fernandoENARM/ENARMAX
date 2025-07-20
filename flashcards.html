@@ -75,6 +75,11 @@
                 <textarea id="new-answer" placeholder="Respuesta" class="form-textarea"></textarea>
             </div>
             <div class="form-group">
+                <button id="preview-answer-btn" class="small-btn">Previsualizar</button>
+                <a href="guide.html" class="small-btn" target="_blank">Guía de sintaxis</a>
+            </div>
+            <div id="answer-preview" class="preview-area"></div>
+            <div class="form-group">
                 <select id="new-category" class="form-input">
                     <option value="">Rubro</option>
                     <option value="definicion">Definición</option>
@@ -94,6 +99,10 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+    <script src="main.js"></script>
     <script src="app.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
