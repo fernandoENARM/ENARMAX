@@ -113,12 +113,12 @@ let flashcards = [
 ];
 
 const specialties = [
-    { slug: 'medicina-interna', name: 'Medicina Interna', emoji: '🩺' },
-    { slug: 'pediatria', name: 'Pediatría', emoji: '👶' },
-    { slug: 'gineco-obstetricia', name: 'Ginecología y Obstetricia', emoji: '🤰' },
-    { slug: 'cirugia', name: 'Cirugía', emoji: '🔪' },
-    { slug: 'atls', name: 'ATLS', emoji: '🚑' },
-    { slug: 'acls', name: 'ACLS', emoji: '❤️' }
+    { slug: 'medicina-interna', name: 'Medicina Interna', icon: 'icon-stethoscope' },
+    { slug: 'pediatria', name: 'Pediatría', icon: 'icon-baby' },
+    { slug: 'gineco-obstetricia', name: 'Ginecología y Obstetricia', icon: 'icon-pregnancy' },
+    { slug: 'cirugia', name: 'Cirugía', icon: 'icon-scalpel' },
+    { slug: 'atls', name: 'ATLS', icon: 'icon-ambulance' },
+    { slug: 'acls', name: 'ACLS', icon: 'icon-heart' }
 ];
 
 const specialtyNames = specialties.reduce((acc, s) => {
@@ -608,9 +608,9 @@ function renderDeckCarousel() {
         const card = document.createElement('div');
         card.className = 'deck-card';
 
-        const icon = document.createElement('span');
-        icon.className = 'deck-icon';
-        icon.textContent = s.emoji;
+        const icon = document.createElement('i');
+        icon.className = `deck-icon ${s.icon}`;
+        icon.setAttribute('aria-hidden', 'true');
         if (stats[s.slug].pending > 0) {
             icon.classList.add('pending');
         }

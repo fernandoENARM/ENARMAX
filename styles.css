@@ -592,9 +592,20 @@ body.dark-mode .md-audio {
     margin-bottom: 5px;
 }
 
+.deck-icon::before {
+    display: block;
+}
+
 .deck-icon.pending {
     color: var(--danger-color);
 }
+
+.icon-stethoscope::before { content: '🩺'; }
+.icon-baby::before { content: '👶'; }
+.icon-pregnancy::before { content: '🤰'; }
+.icon-scalpel::before { content: '🔪'; }
+.icon-ambulance::before { content: '🚑'; }
+.icon-heart::before { content: '❤️'; }
 
 .deck-badge {
     position: absolute;
