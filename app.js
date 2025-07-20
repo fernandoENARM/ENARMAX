@@ -777,7 +777,8 @@ function importFlashcards(e) {
 }
 
 // Handle keyboard navigation
-function handleKeyDown(e) {
+// Keep a reference to remove this listener later
+const handleKeyDown = (e) => {
     switch(e.key) {
         case 'ArrowLeft':
             showPreviousCard();
@@ -801,6 +802,11 @@ function handleKeyDown(e) {
             break;
     }
 }
+
+// Remove keyboard listener when leaving the page
+window.addEventListener('beforeunload', () => {
+    document.removeEventListener('keydown', handleKeyDown);
+});
 
 // Initialize the application when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
