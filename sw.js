@@ -1,12 +1,14 @@
-const CACHE_NAME = 'enarmax-v1';
+const CACHE_NAME = 'enarmax-v2';
 const ASSETS = [
   '/',
   'index.html',
   'flashcards.html',
   'cloze.html',
+  'exam.html',
   'styles.css',
   'app.js',
   'cloze.js',
+  'main.js',
   'js/chart.min.js'
 ];
 self.addEventListener('install', e => {
