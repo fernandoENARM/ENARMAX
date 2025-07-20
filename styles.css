@@ -726,3 +726,34 @@ body.dark-mode .md-audio {
     font-size: 1rem;
     cursor: pointer;
 }
+
+/* ---- Study session ---- */
+.study-page .flashcard-front,
+.study-page .flashcard-back {
+    font-size: 1.4rem;
+}
+
+.study-page .flashcard-back.revealed {
+    color: var(--success-color);
+    animation: fade-in 0.3s ease-in;
+}
+
+.session-progress {
+    height: 10px;
+    background: var(--card-background-alt);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.session-progress #progress-fill {
+    height: 100%;
+    background: var(--primary-color);
+    width: 0;
+    transition: width 0.3s ease;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
