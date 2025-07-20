@@ -13,7 +13,7 @@
             <h1>Repaso de Tarjetas Médicas</h1>
             <h2 id="specialty-title"></h2>
             <a href="index.html" class="back-link">&larr; Inicio</a>
-            <button id="theme-toggle" class="theme-toggle">Modo Noche</button>
+            <button id="theme-toggle" class="theme-toggle">🌙</button>
             <div class="stats">
                 <div class="stat-card">
                     <span class="stat-number" id="today-count">0</span>
@@ -72,6 +72,19 @@
             </div>
             <div class="form-group">
                 <textarea id="new-answer" placeholder="Respuesta" class="form-textarea"></textarea>
+            </div>
+            <div class="form-group">
+                <select id="new-category" class="form-input">
+                    <option value="">Rubro</option>
+                    <option value="definicion">Definición</option>
+                    <option value="epidemiologia">Epidemiología</option>
+                    <option value="etiologia">Etiología</option>
+                    <option value="fisiopatologia">Fisiopatología</option>
+                    <option value="cuadro-clinico">Cuadro Clínico</option>
+                    <option value="diagnostico">Diagnóstico</option>
+                    <option value="tratamiento">Tratamiento</option>
+                    <option value="complicaciones">Complicaciones</option>
+                </select>
             </div>
             <div class="form-group">
                 <select id="new-specialty" class="form-input">

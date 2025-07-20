@@ -5,6 +5,7 @@ let flashcards = [
         answer: "Es una condición médica en la que la presión arterial es persistentemente elevada, generalmente definida como una presión sistólica de 140 mmHg o más y/o una presión diastólica de 90 mmHg o más.",
         specialty: "medicina-interna",
         difficulty: "medium",
+        category: "definicion",
         lastReviewed: null,
         nextReview: null,
         reviewCount: 0
@@ -14,6 +15,7 @@ let flashcards = [
         answer: "1. Temperatura corporal\n2. Frecuencia cardíaca (pulso)\n3. Presión arterial\n4. Frecuencia respiratoria\n5. Saturación de oxígeno",
         specialty: "medicina-interna",
         difficulty: "easy",
+        category: "diagnostico",
         lastReviewed: null,
         nextReview: null,
         reviewCount: 0
@@ -23,6 +25,7 @@ let flashcards = [
         answer: "Es un trastorno hormonal causado por la exposición prolongada a niveles altos de cortisol. Los síntomas incluyen obesidad central, cara de luna llena, joroba de búfalo, estrías violáceas, hipertensión y diabetes mellitus.",
         specialty: "medicina-interna",
         difficulty: "hard",
+        category: "fisiopatologia",
         lastReviewed: null,
         nextReview: null,
         reviewCount: 0
@@ -32,6 +35,7 @@ let flashcards = [
         answer: "Virus sincitial respiratorio",
         specialty: "pediatria",
         difficulty: "medium",
+        category: "etiologia",
         lastReviewed: null,
         nextReview: null,
         reviewCount: 0
@@ -41,6 +45,7 @@ let flashcards = [
         answer: "Entre las semanas 24 y 28 de gestación.",
         specialty: "gineco-obstetricia",
         difficulty: "medium",
+        category: "diagnostico",
         lastReviewed: null,
         nextReview: null,
         reviewCount: 0
@@ -50,6 +55,7 @@ let flashcards = [
         answer: "Dolor en cuadrante superior derecho, fiebre y leucocitosis.",
         specialty: "cirugia",
         difficulty: "medium",
+        category: "cuadro-clinico",
         lastReviewed: null,
         nextReview: null,
         reviewCount: 0
@@ -59,6 +65,7 @@ let flashcards = [
         answer: "A - Vía aérea con control cervical, B - Respiración, C - Circulación, D - Déficit neurológico, E - Exposición.",
         specialty: "atls",
         difficulty: "easy",
+        category: "tratamiento",
         lastReviewed: null,
         nextReview: null,
         reviewCount: 0
@@ -68,6 +75,37 @@ let flashcards = [
         answer: "1 mg IV cada 3-5 minutos.",
         specialty: "acls",
         difficulty: "easy",
+        category: "tratamiento",
+        lastReviewed: null,
+        nextReview: null,
+        reviewCount: 0
+    },
+    {
+        question: "¿Qué es la diabetes mellitus tipo 1?",
+        answer: "Enfermedad autoinmune caracterizada por destrucción de las células beta pancreáticas y deficiencia absoluta de insulina.",
+        specialty: "medicina-interna",
+        difficulty: "medium",
+        category: "definicion",
+        lastReviewed: null,
+        nextReview: null,
+        reviewCount: 0
+    },
+    {
+        question: "¿Edad más frecuente de presentación del cáncer testicular?",
+        answer: "Entre los 15 y 35 años de edad.",
+        specialty: "cirugia",
+        difficulty: "medium",
+        category: "epidemiologia",
+        lastReviewed: null,
+        nextReview: null,
+        reviewCount: 0
+    },
+    {
+        question: "¿Cuál es la complicación más grave de la influenza?",
+        answer: "Neumonía viral o sobreinfección bacteriana severa.",
+        specialty: "pediatria",
+        difficulty: "medium",
+        category: "complicaciones",
         lastReviewed: null,
         nextReview: null,
         reviewCount: 0
@@ -89,6 +127,7 @@ const addCardBtn = document.getElementById('add-card-btn');
 const newQuestionInput = document.getElementById('new-question');
 const newAnswerInput = document.getElementById('new-answer');
 const newSpecialtySelect = document.getElementById('new-specialty');
+const newCategorySelect = document.getElementById('new-category');
 const editCardBtn = document.getElementById('edit-card-btn');
 const deleteCardBtn = document.getElementById('delete-card-btn');
 const exportBtn = document.getElementById('export-btn');
@@ -115,11 +154,18 @@ let pendingCards = 0;
 let newCards = 0;
 let isFlipped = false;
 
+function updateThemeIcon(isDark) {
+    if (!themeToggle) return;
+    themeToggle.textContent = isDark ? '☀️' : '🌙';
+}
+
 function loadTheme() {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
         document.body.classList.add('dark-mode');
-        if (themeToggle) themeToggle.textContent = 'Modo Día';
+        updateThemeIcon(true);
+    } else {
+        updateThemeIcon(false);
     }
 }
 
@@ -131,7 +177,7 @@ function getQueryParam(name) {
 function toggleTheme() {
     const isDark = document.body.classList.toggle('dark-mode');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    themeToggle.textContent = isDark ? 'Modo Día' : 'Modo Noche';
+    updateThemeIcon(isDark);
 }
 
 // Profile picture handling
@@ -289,6 +335,7 @@ function initHomePage() {
         });
         userNameInput.addEventListener('change', handleNameChange);
     }
+    if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
 }
 
 // Load flashcards from localStorage or use sample data
@@ -341,11 +388,17 @@ function showCard() {
         answerElement.textContent = "";
         return;
     }
-    
+
     const currentCard = flashcards[currentCardIndex];
     questionElement.textContent = currentCard.question;
     answerElement.textContent = currentCard.answer;
-    
+
+    const categories = ['definicion','epidemiologia','etiologia','fisiopatologia','cuadro-clinico','diagnostico','tratamiento','complicaciones'];
+    categories.forEach(c => flashcard.classList.remove(c));
+    if (currentCard.category) {
+        flashcard.classList.add(currentCard.category);
+    }
+
     // Reset card to front
     if (isFlipped) {
         flashcard.classList.remove('flipped');
@@ -440,13 +493,15 @@ function addNewCard() {
     const question = newQuestionInput.value.trim();
     const answer = newAnswerInput.value.trim();
     const specialty = newSpecialtySelect ? newSpecialtySelect.value : '';
+    const category = newCategorySelect ? newCategorySelect.value : '';
 
-    if (question && answer && specialty) {
+    if (question && answer && specialty && category) {
         const newCard = {
             question,
             answer,
             specialty,
             difficulty: 'medium',
+            category,
             lastReviewed: null,
             nextReview: null,
             reviewCount: 0
@@ -467,7 +522,7 @@ function addNewCard() {
         currentCardIndex = flashcards.length - 1;
         showCard();
     } else {
-        alert('Por favor ingresa la pregunta, la respuesta y la especialidad.');
+        alert('Por favor ingresa la pregunta, la respuesta, la especialidad y el rubro.');
     }
 }
 
