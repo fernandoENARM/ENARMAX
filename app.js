@@ -154,6 +154,13 @@ let pendingCards = 0;
 let newCards = 0;
 let isFlipped = false;
 
+// Enable or disable difficulty buttons
+function setDifficultyButtonsEnabled(enabled) {
+    difficultyBtns.forEach(btn => {
+        btn.disabled = !enabled;
+    });
+}
+
 function updateThemeIcon(isDark) {
     if (!themeToggle) return;
     themeToggle.textContent = isDark ? '☀️' : '🌙';
@@ -296,6 +303,7 @@ function initFlashcardsPage() {
     updatePendingAndNewCounts();
     updateStats();
     showCard();
+    setDifficultyButtonsEnabled(false);
     if (nextBtn) nextBtn.addEventListener('click', showNextCard);
     if (flipBtn) flipBtn.addEventListener('click', flipCard);
     if (addCardBtn) addCardBtn.addEventListener('click', addNewCard);
@@ -405,6 +413,7 @@ function showCard() {
         flipBtn.textContent = 'Mostrar Respuesta';
         isFlipped = false;
     }
+    setDifficultyButtonsEnabled(false);
     
     // Update navigation buttons
     prevBtn.disabled = currentCardIndex === 0;
@@ -436,6 +445,7 @@ function flipCard() {
     if (isFlipped) {
         flashcard.classList.add('flipped');
         flipBtn.textContent = 'Mostrar Pregunta';
+        setDifficultyButtonsEnabled(true);
         
         // Mark as reviewed if it's the first time
         const currentCard = flashcards[currentCardIndex];
@@ -446,6 +456,7 @@ function flipCard() {
     } else {
         flashcard.classList.remove('flipped');
         flipBtn.textContent = 'Mostrar Respuesta';
+        setDifficultyButtonsEnabled(false);
     }
 }
 
@@ -476,6 +487,7 @@ function setDifficulty(difficulty) {
     
     // Save and update
     saveFlashcards();
+    setDifficultyButtonsEnabled(false);
     
     // Show next card after a short delay
     setTimeout(() => {
