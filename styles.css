@@ -323,12 +323,13 @@ h1 {
     background: var(--card-background);
     padding: 20px;
     border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    transition: transform 0.2s;
+    box-shadow: none;
+    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
 }
 
 .specialty-card:hover {
-    transform: translateY(-4px);
+    transform: scale(1.05);
+    box-shadow: var(--box-shadow);
 }
 
 .specialty-card .emoji {
