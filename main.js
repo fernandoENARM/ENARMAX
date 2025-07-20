@@ -182,6 +182,7 @@
       });
       next.addEventListener('click', () => submitAnswer());
     }
+    window.addEventListener('beforeunload', () => clearInterval(examState.timer));
   }
 
   window.startAdaptiveExam = function(){
