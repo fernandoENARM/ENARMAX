@@ -2,7 +2,8 @@
 let flashcards = [
     {
         question: "¿Qué es la hipertensión arterial?",
-        answer: "Es una condición médica en la que la presión arterial en las arterias es persistentemente elevada, generalmente definida como una presión sistólica de 140 mmHg o más y/o una presión diastólica de 90 mmHg o más.",
+        answer: "Es una condición médica en la que la presión arterial es persistentemente elevada, generalmente definida como una presión sistólica de 140 mmHg o más y/o una presión diastólica de 90 mmHg o más.",
+        specialty: "medicina-interna",
         difficulty: "medium",
         lastReviewed: null,
         nextReview: null,
@@ -11,6 +12,7 @@ let flashcards = [
     {
         question: "¿Cuáles son los signos vitales principales?",
         answer: "1. Temperatura corporal\n2. Frecuencia cardíaca (pulso)\n3. Presión arterial\n4. Frecuencia respiratoria\n5. Saturación de oxígeno",
+        specialty: "medicina-interna",
         difficulty: "easy",
         lastReviewed: null,
         nextReview: null,
@@ -19,7 +21,53 @@ let flashcards = [
     {
         question: "¿Qué es el síndrome de Cushing?",
         answer: "Es un trastorno hormonal causado por la exposición prolongada a niveles altos de cortisol. Los síntomas incluyen obesidad central, cara de luna llena, joroba de búfalo, estrías violáceas, hipertensión y diabetes mellitus.",
+        specialty: "medicina-interna",
         difficulty: "hard",
+        lastReviewed: null,
+        nextReview: null,
+        reviewCount: 0
+    },
+    {
+        question: "¿Cuál es la causa más frecuente de bronquiolitis?",
+        answer: "Virus sincitial respiratorio",
+        specialty: "pediatria",
+        difficulty: "medium",
+        lastReviewed: null,
+        nextReview: null,
+        reviewCount: 0
+    },
+    {
+        question: "¿Edad gestacional para tamizaje de diabetes gestacional?",
+        answer: "Entre las semanas 24 y 28 de gestación.",
+        specialty: "gineco-obstetricia",
+        difficulty: "medium",
+        lastReviewed: null,
+        nextReview: null,
+        reviewCount: 0
+    },
+    {
+        question: "¿Cuál es la tríada de la colecistitis aguda?",
+        answer: "Dolor en cuadrante superior derecho, fiebre y leucocitosis.",
+        specialty: "cirugia",
+        difficulty: "medium",
+        lastReviewed: null,
+        nextReview: null,
+        reviewCount: 0
+    },
+    {
+        question: "¿Cuál es la secuencia primaria de la evaluación en ATLS?",
+        answer: "A - Vía aérea con control cervical, B - Respiración, C - Circulación, D - Déficit neurológico, E - Exposición.",
+        specialty: "atls",
+        difficulty: "easy",
+        lastReviewed: null,
+        nextReview: null,
+        reviewCount: 0
+    },
+    {
+        question: "¿Dosis de adrenalina en paro cardiaco durante RCP?",
+        answer: "1 mg IV cada 3-5 minutos.",
+        specialty: "acls",
+        difficulty: "easy",
         lastReviewed: null,
         nextReview: null,
         reviewCount: 0
@@ -41,7 +89,9 @@ const addCardBtn = document.getElementById('add-card-btn');
 const newQuestionInput = document.getElementById('new-question');
 const newAnswerInput = document.getElementById('new-answer');
 const themeToggle = document.getElementById('theme-toggle');
+const specialtyTitle = document.getElementById("specialty-title");
 
+const specialtyNames = {"medicina-interna":"Medicina Interna","pediatria":"Pediatría","gineco-obstetricia":"Ginecología y Obstetricia","cirugia":"Cirugía","atls":"ATLS","acls":"ACLS"};
 // App state
 let currentCardIndex = 0;
 let cardsReviewedToday = 0;
@@ -57,6 +107,11 @@ function loadTheme() {
     }
 }
 
+function getQueryParam(name) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(name);
+}
+
 function toggleTheme() {
     const isDark = document.body.classList.toggle('dark-mode');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
@@ -66,15 +121,19 @@ function toggleTheme() {
 // Initialize the app
 function init() {
     loadFlashcards();
+    const specialty = getQueryParam("specialty");
+    if (specialty) {
+        flashcards = flashcards.filter(c => c.specialty === specialty);
+        if (specialtyTitle) specialtyTitle.textContent = specialtyNames[specialty] || "";
+    }
     loadTheme();
+    updatePendingAndNewCounts();
     updateStats();
     showCard();
-    
-    // Event listeners
-    prevBtn.addEventListener('click', showPreviousCard);
     nextBtn.addEventListener('click', showNextCard);
     flipBtn.addEventListener('click', flipCard);
     addCardBtn.addEventListener('click', addNewCard);
+    prevBtn.addEventListener("click", showPreviousCard);
     if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
     
     // Difficulty buttons
