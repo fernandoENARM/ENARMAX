@@ -3,8 +3,10 @@ const ASSETS = [
   '/',
   'index.html',
   'flashcards.html',
+  'cloze.html',
   'styles.css',
   'app.js',
+  'cloze.js',
   'js/chart.min.js'
 ];
 self.addEventListener('install', e => {

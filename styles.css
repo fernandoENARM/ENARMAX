@@ -454,3 +454,26 @@ body.dark-mode .level-3 { background-color: #4338ca; }
     font-size: 0.9rem;
     gap: 4px;
 }
+
+/* Cloze card creator */
+.preview-area {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    background: var(--card-background-alt);
+    min-height: 50px;
+    white-space: pre-wrap;
+}
+
+.cloze-blank {
+    background-color: #e0e0e0;
+    border-bottom: 2px solid #999;
+    padding: 0 4px;
+}
+
+.error {
+    color: var(--danger-color);
+    font-size: 0.9rem;
+    margin-top: 5px;
+}

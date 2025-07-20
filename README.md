@@ -17,6 +17,8 @@ No se requieren dependencias externas ni servidores adicionales; todo funciona d
 - `index.html` – Página principal de la aplicación.
 - `styles.css` – Hojas de estilo con el diseño de la interfaz.
 - `app.js` – Lógica de las tarjetas y manejo de eventos.
+- `cloze.html` – Formulario para crear tarjetas tipo cloze.
+- `cloze.js` – Lógica de previsualización y guardado de las tarjetas cloze.
 
 ## Contribuciones
 
