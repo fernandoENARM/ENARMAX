@@ -126,6 +126,19 @@ const specialtyNames = specialties.reduce((acc, s) => {
     return acc;
 }, {});
 
+let topics = JSON.parse(localStorage.getItem('studyTopics') || '[]');
+if (topics.length === 0) {
+    topics = [
+        { id: 'neonatologia', name: 'Neonatología', specialty: 'pediatria', total: 10, reviews: 0, errors: 0, mastery: 0 },
+        { id: 'infectologia', name: 'Infectología', specialty: 'pediatria', total: 8, reviews: 0, errors: 0, mastery: 0 },
+        { id: 'trauma', name: 'Trauma', specialty: 'cirugia', total: 12, reviews: 0, errors: 0, mastery: 0 }
+    ];
+}
+
+function saveTopics() {
+    localStorage.setItem('studyTopics', JSON.stringify(topics));
+}
+
 // DOM Elements
 const flashcard = document.getElementById('flashcard');
 const questionElement = document.getElementById('question');
@@ -158,6 +171,19 @@ const changeNameBtn = document.getElementById('change-name-btn');
 const userNameInput = document.getElementById('user-name-input');
 const progressChartCanvas = document.getElementById('progress-chart');
 const weakTopicsList = document.getElementById('weak-topics-list');
+const homeContainer = document.querySelector('.container.home');
+const topicView = document.getElementById('topic-view');
+const topicListEl = document.getElementById('topic-list');
+const topicViewTitle = document.getElementById('topic-view-title');
+const topicDetail = document.getElementById('topic-detail');
+const topicDetailTitle = document.getElementById('topic-detail-title');
+const metricTotal = document.getElementById('metric-total');
+const metricReviews = document.getElementById('metric-reviews');
+const metricErrors = document.getElementById('metric-errors');
+const metricMastery = document.getElementById('metric-mastery');
+const startStudyBtn = document.getElementById('start-study-btn');
+const backToHomeBtn = document.getElementById('back-to-home');
+const topicBackBtn = document.getElementById('topic-back-btn');
 
 // App state
 let allFlashcards = [];
@@ -166,6 +192,8 @@ let cardsReviewedToday = 0;
 let pendingCards = 0;
 let newCards = 0;
 let isFlipped = false;
+let currentTopic = null;
+let topicViewScroll = 0;
 
 // Enable or disable difficulty buttons
 function setDifficultyButtonsEnabled(enabled) {
@@ -530,10 +558,51 @@ function renderDeckCarousel() {
         card.appendChild(title);
         card.appendChild(badge);
         card.addEventListener('click', () => {
-            window.location.href = `flashcards.html?specialty=${s.slug}`;
+            renderTopicList(s.slug);
         });
         container.appendChild(card);
     });
+}
+
+function renderTopicList(specialty) {
+    if (!topicView || !topicListEl) return;
+    topicListEl.innerHTML = '';
+    topicViewTitle.textContent = `Temas de ${specialtyNames[specialty] || specialty}`;
+    topics.filter(t => t.specialty === specialty).forEach(t => {
+        const card = document.createElement('div');
+        card.className = 'deck-card topic-card';
+        card.textContent = t.name;
+        card.addEventListener('click', () => openTopicDetail(t));
+        topicListEl.appendChild(card);
+    });
+    if (homeContainer) homeContainer.hidden = true;
+    if (topicDetail) topicDetail.hidden = true;
+    topicView.hidden = false;
+}
+
+function openTopicDetail(topic) {
+    currentTopic = topic;
+    if (topicView) {
+        topicViewScroll = topicView.scrollTop;
+        topicView.hidden = true;
+    }
+    if (!topicDetail) return;
+    topicDetail.hidden = false;
+    topicDetailTitle.textContent = `Tema: ${topic.name}`;
+    metricTotal.textContent = topic.total;
+    metricReviews.textContent = topic.reviews;
+    metricErrors.textContent = topic.errors;
+    metricMastery.textContent = `${topic.mastery}%`;
+    startStudyBtn.setAttribute('aria-label', `Comenzar a estudiar el tema ${topic.name}`);
+    startStudyBtn.textContent = 'Comenzar a estudiar';
+    startStudyBtn.onclick = () => {
+        topic.reviews += 1;
+        metricReviews.textContent = topic.reviews;
+        saveTopics();
+        sessionStorage.setItem('topicId', topic.id);
+        startStudySession(topic.id);
+    };
+    setTimeout(() => topicDetailTitle.focus(), 0);
 }
 
 // Initialize flashcards page
@@ -602,6 +671,17 @@ function initHomePage() {
         userNameInput.addEventListener('change', handleNameChange);
     }
     if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+    if (backToHomeBtn) backToHomeBtn.addEventListener('click', () => {
+        if (topicView) topicView.hidden = true;
+        if (homeContainer) homeContainer.hidden = false;
+    });
+    if (topicBackBtn) topicBackBtn.addEventListener('click', () => {
+        if (topicDetail) topicDetail.hidden = true;
+        if (topicView) {
+            topicView.hidden = false;
+            topicView.scrollTop = topicViewScroll;
+        }
+    });
 }
 
 // Load flashcards from localStorage or use sample data
@@ -955,6 +1035,7 @@ function startStudySession(topicId) {
     studyState.incorrect = 0;
     studyState.topic = specialtyNames[topicId] || topicId;
     if (container) container.style.display = 'none';
+    if (topicDetail) topicDetail.hidden = true;
     section.hidden = false;
     loadStudyCard();
 }
@@ -1030,9 +1111,8 @@ function showStudyComplete() {
 
 function exitStudySession() {
     const section = document.getElementById('study-session');
-    const container = document.querySelector('.container.home');
     if (section) section.hidden = true;
-    if (container) container.style.display = '';
+    if (topicDetail) topicDetail.hidden = false;
     const modal = document.getElementById('session-modal');
     if (modal) modal.setAttribute('aria-hidden', 'true');
 }

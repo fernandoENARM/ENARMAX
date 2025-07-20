@@ -53,6 +53,37 @@
             <div id="deck-carousel" class="deck-carousel"></div>
         </section>
     </div>
+
+    <section id="topic-view" hidden>
+        <button id="back-to-home" class="back-link">&larr; Volver</button>
+        <h2 id="topic-view-title"></h2>
+        <div id="topic-list" class="deck-carousel"></div>
+    </section>
+
+    <section id="topic-detail" hidden>
+        <button id="topic-back-btn" class="back-link">&larr; Volver</button>
+        <h2 id="topic-detail-title" tabindex="-1">Tema:</h2>
+        <div class="topic-metric-grid">
+            <div class="metric-card">
+                <span id="metric-total" class="metric-number" aria-live="polite"></span>
+                <span class="metric-label">total de flashcards</span>
+            </div>
+            <div class="metric-card">
+                <span id="metric-reviews" class="metric-number" aria-live="polite"></span>
+                <span class="metric-label">veces repasado</span>
+            </div>
+            <div class="metric-card">
+                <span id="metric-errors" class="metric-number" aria-live="polite"></span>
+                <span class="metric-label">errores totales</span>
+            </div>
+            <div class="metric-card">
+                <span id="metric-mastery" class="metric-number" aria-live="polite"></span>
+                <span class="metric-label">porcentaje de dominio</span>
+            </div>
+        </div>
+        <button id="start-study-btn" class="primary start-study-btn" aria-label="Comenzar a estudiar">Comenzar a estudiar</button>
+    </section>
+
     <section id="study-session" hidden>
         <small id="session-header"></small>
         <div id="card-front" class="prompt-area"></div>
@@ -68,6 +99,7 @@
         </div>
         <button id="exit-session-btn" class="small-btn">Salir</button>
     </section>
+
     <div id="session-modal" class="modal" aria-hidden="true">
         <div class="modal-content">
             <h3>¡Sesión completada!</h3>

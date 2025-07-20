@@ -686,6 +686,47 @@ body.dark-mode .md-audio {
     display: block;
 }
 
+/* Topic detail */
+.topic-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.metric-card {
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 20px;
+    text-align: center;
+}
+
+.metric-number {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.metric-label {
+    text-transform: lowercase;
+    color: var(--secondary-color);
+}
+
+.start-study-btn {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 20px auto 0;
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--border-radius);
+    background: var(--primary-color);
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
 /* Study session */
 #study-session {
     text-align: center;
