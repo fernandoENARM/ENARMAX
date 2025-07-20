@@ -85,6 +85,7 @@ h1 {
     box-shadow: -4px -4px 4px rgba(255, 255, 255, 0.6), 4px 4px 6px rgba(0, 0, 0, 0.15);
     transition: box-shadow 0.2s, transform 0.2s;
     position: absolute;
+    z-index: 1101;
     top: 20px;
     right: 20px;
 }
