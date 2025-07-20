@@ -505,3 +505,68 @@ body.dark-mode .md-audio {
 #time-bar-fill { height:100%; background:var(--primary-color); width:100%; transition:width 1s linear; }
 #time-remaining { min-width:50px; font-weight:700; color:var(--danger-color); }
 .exam-q-text { margin:20px 0; min-height:80px; }
+
+/* Deck editor */
+.deck-management {
+    margin-bottom: 30px;
+}
+
+#deck-editor ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+#deck-editor ul ul {
+    margin-left: 10px;
+}
+
+#deck-editor li {
+    margin: 2px 0;
+}
+
+#deck-editor .deck-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: grab;
+}
+
+#deck-editor .dragging .deck-row {
+    cursor: grabbing;
+}
+
+#deck-editor .icon-btn {
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 4px;
+    background: var(--secondary-color);
+    color: #fff;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+#deck-editor .icon-btn:hover {
+    background: var(--primary-color);
+}
+
+#deck-editor .arrow {
+    user-select: none;
+    cursor: pointer;
+}
+
+.banner {
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    background: var(--warning-color);
+    color: #212529;
+}
+
+.banner.error {
+    background: var(--danger-color);
+    color: #fff;
+}
