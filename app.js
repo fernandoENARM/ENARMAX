@@ -238,6 +238,8 @@ const importBtn = document.getElementById('import-btn');
 const importInput = document.getElementById('import-input');
 const themeToggle = document.getElementById('theme-toggle');
 const specialtyTitle = document.getElementById("specialty-title");
+const toggleGuideBtn = document.getElementById('toggle-guide-btn');
+const guideContainer = document.getElementById('guide-container');
 // Home page elements
 const profilePic = document.getElementById('profile-pic');
 const changePicBtn = document.getElementById('change-pic-btn');
@@ -300,6 +302,11 @@ function toggleTheme() {
     const isDark = document.body.classList.toggle('dark-mode');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
     updateThemeIcon(isDark);
+}
+
+function toggleGuide() {
+    if (!guideContainer) return;
+    guideContainer.style.display = guideContainer.style.display === 'none' || guideContainer.style.display === '' ? 'block' : 'none';
 }
 
 // Profile picture handling
@@ -710,6 +717,7 @@ function initFlashcardsPage() {
     }
     if (prevBtn) prevBtn.addEventListener("click", showPreviousCard);
     if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+    if (toggleGuideBtn) toggleGuideBtn.addEventListener('click', toggleGuide);
 
     // Difficulty buttons
     difficultyBtns.forEach(btn => {

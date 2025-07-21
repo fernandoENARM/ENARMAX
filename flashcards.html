@@ -69,7 +69,7 @@
             </div>
         </main>
 
-        <div class="add-card-form">
+    <div class="add-card-form">
             <h3>Agregar Nueva Tarjeta</h3>
             <div class="form-group">
                 <label for="new-question">Pregunta
@@ -83,7 +83,7 @@
             </div>
             <div class="form-group">
                 <button id="preview-answer-btn" class="small-btn">Previsualizar</button>
-                <a href="guide.html" class="small-btn" target="_blank">Guía de sintaxis</a>
+                <button id="toggle-guide-btn" class="small-btn" type="button">Guía de sintaxis</button>
             </div>
             <div id="answer-preview" class="preview-area"></div>
             <div class="form-group">
@@ -103,6 +103,19 @@
                 <select id="new-specialty" class="form-input"></select>
             </div>
             <button id="add-card-btn" class="primary">Agregar Tarjeta</button>
+        </div>
+    </div>
+    <div id="guide-container" style="display:none">
+        <div class="container">
+            <h1>Guía de Sintaxis</h1>
+            <p>Ejemplos de uso del campo <code>body</code>:</p>
+            <pre>
+![Radiografía de tórax](https://ejemplo.com/rx.jpg)
+
+<audio src="miarchivo.mp3" controls></audio>
+
+$E = mc^2$
+            </pre>
         </div>
     </div>
 
