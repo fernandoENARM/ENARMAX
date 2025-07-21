@@ -716,7 +716,8 @@ function initFlashcardsPage() {
         importInput.addEventListener('change', importFlashcards);
     }
     if (prevBtn) prevBtn.addEventListener("click", showPreviousCard);
-    if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+    // The theme toggle listener is initialized in initHomePage
+    // if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
     if (toggleGuideBtn) toggleGuideBtn.addEventListener('click', toggleGuide);
 
     // Difficulty buttons
