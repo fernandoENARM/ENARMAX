@@ -1,4 +1,4 @@
-const CACHE_NAME = 'enarmax-v2';
+const CACHE_NAME = 'enarmax-v3';
 const ASSETS = [
   '/',
   'index.html',
@@ -11,17 +11,34 @@ const ASSETS = [
   'cloze.js',
   'study.js',
   'main.js',
-  'js/chart.min.js',
-  'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js',
-  'https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js',
-  'https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css',
-  'https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js'
+  'js/chart.min.js'
 ];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)));
 });
+const CDN_URLS = [
+  'https://cdn.jsdelivr.net/npm/sortablejs',
+  'https://cdn.jsdelivr.net/npm/markdown-it',
+  'https://cdn.jsdelivr.net/npm/katex'
+];
+
 self.addEventListener('fetch', e => {
+  const { request } = e;
+  if (CDN_URLS.some(url => request.url.startsWith(url))) {
+    e.respondWith(
+      caches.match(request).then(cached => {
+        if (cached) return cached;
+        return fetch(request).then(resp => {
+          return caches.open(CACHE_NAME).then(cache => {
+            cache.put(request, resp.clone());
+            return resp;
+          });
+        });
+      })
+    );
+    return;
+  }
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
+    caches.match(request).then(r => r || fetch(request))
   );
 });
