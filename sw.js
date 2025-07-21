@@ -1,11 +1,7 @@
-const CACHE_NAME = 'enarmax-v2';
+const CACHE_NAME = 'enarmax-v3';
 const ASSETS = [
   '/',
   'index.html',
-  'flashcards.html',
-  'cloze.html',
-  'exam.html',
-  'study.html',
   'styles.css',
   'app.js',
   'cloze.js',

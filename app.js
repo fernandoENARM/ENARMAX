@@ -260,6 +260,16 @@ const metricMastery = document.getElementById('metric-mastery');
 const startStudyBtn = document.getElementById('start-study-btn');
 const backToHomeBtn = document.getElementById('back-to-home');
 const topicBackBtn = document.getElementById('topic-back-btn');
+const flashcardsPage = document.getElementById('flashcards-page');
+const clozePage = document.getElementById('cloze-page');
+const examPage = document.getElementById('exam-page');
+const studyPage = document.getElementById('study-page');
+const backFlashcardsBtn = document.getElementById('back-from-flashcards');
+const openClozeBtn = document.getElementById('open-cloze-btn');
+const backClozeBtn = document.getElementById('back-from-cloze');
+const examBackBtn = document.getElementById('exam-back-home');
+const homeLink = document.getElementById('home-link');
+const examLink = document.getElementById('open-exam-link');
 
 // App state
 let allFlashcards = [];
@@ -268,6 +278,7 @@ let cardsReviewedToday = 0;
 let pendingCards = 0;
 let newCards = 0;
 let isFlipped = false;
+let flashcardsInitialized = false;
 
 // Enable or disable difficulty buttons
 function setDifficultyButtonsEnabled(enabled) {
@@ -293,7 +304,7 @@ function loadTheme() {
 
 function getQueryParam(name) {
     const params = new URLSearchParams(window.location.search);
-    return params.get(name);
+    return params.get(name) || sessionStorage.getItem(name);
 }
 
 function toggleTheme() {
@@ -301,6 +312,60 @@ function toggleTheme() {
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
     updateThemeIcon(isDark);
 }
+
+function hideAllPages() {
+    if (homeContainer) homeContainer.hidden = true;
+    if (topicView) topicView.hidden = true;
+    if (topicDetail) topicDetail.hidden = true;
+    if (flashcardsPage) flashcardsPage.hidden = true;
+    if (clozePage) clozePage.hidden = true;
+    if (examPage) examPage.hidden = true;
+    if (studyPage) studyPage.hidden = true;
+}
+
+function showHome() {
+    hideAllPages();
+    if (homeContainer) homeContainer.hidden = false;
+}
+
+function openFlashcards(spec) {
+    if (spec) sessionStorage.setItem('specialty', spec);
+    hideAllPages();
+    if (flashcardsPage) flashcardsPage.hidden = false;
+    initFlashcardsPage();
+}
+
+function openCloze() {
+    hideAllPages();
+    if (clozePage) clozePage.hidden = false;
+}
+
+function openExam() {
+    hideAllPages();
+    if (examPage) examPage.hidden = false;
+}
+
+function openStudySession(topicId) {
+    if (topicId) sessionStorage.setItem('topicId', topicId);
+    hideAllPages();
+    if (studyPage) studyPage.hidden = false;
+    if (window.startStudySession) window.startStudySession(topicId);
+}
+
+function closeStudySession() {
+    if (currentTopic) {
+        openTopicDetail(currentTopic);
+    } else {
+        showHome();
+    }
+}
+
+window.showHome = showHome;
+window.openFlashcards = openFlashcards;
+window.openCloze = openCloze;
+window.openExam = openExam;
+window.openStudySession = openStudySession;
+window.closeStudySession = closeStudySession;
 
 // Profile picture handling
 function loadProfilePic() {
@@ -413,7 +478,7 @@ function renderWeakTopics() {
         btn.className = 'small-btn';
         btn.textContent = 'Estudiar ahora';
         btn.addEventListener('click', () => {
-            window.location.href = `flashcards.html?specialty=${card.specialty}`;
+            openFlashcards(card.specialty);
         });
         li.appendChild(chip);
         li.appendChild(btn);
@@ -676,8 +741,7 @@ function openTopicDetail(topic) {
         topic.reviews += 1;
         metricReviews.textContent = topic.reviews;
         saveTopics();
-        sessionStorage.setItem('topicId', topic.id);
-        window.location.href = `study.html?topicId=${topic.id}`;
+        openStudySession(topic.id);
     };
     setTimeout(() => topicDetailTitle.focus(), 0);
 }
@@ -698,26 +762,29 @@ function initFlashcardsPage() {
     updateStats();
     showCard();
     setDifficultyButtonsEnabled(false);
-    if (nextBtn) nextBtn.addEventListener('click', showNextCard);
-    if (flipBtn) flipBtn.addEventListener('click', flipCard);
-    if (addCardBtn) addCardBtn.addEventListener('click', addNewCard);
-    if (editCardBtn) editCardBtn.addEventListener('click', editCurrentCard);
-    if (deleteCardBtn) deleteCardBtn.addEventListener('click', deleteCurrentCard);
-    if (exportBtn) exportBtn.addEventListener('click', exportFlashcards);
-    if (importBtn && importInput) {
-        importBtn.addEventListener('click', () => importInput.click());
-        importInput.addEventListener('change', importFlashcards);
+    if (!flashcardsInitialized) {
+        if (nextBtn) nextBtn.addEventListener('click', showNextCard);
+        if (flipBtn) flipBtn.addEventListener('click', flipCard);
+        if (addCardBtn) addCardBtn.addEventListener('click', addNewCard);
+        if (editCardBtn) editCardBtn.addEventListener('click', editCurrentCard);
+        if (deleteCardBtn) deleteCardBtn.addEventListener('click', deleteCurrentCard);
+        if (exportBtn) exportBtn.addEventListener('click', exportFlashcards);
+        if (importBtn && importInput) {
+            importBtn.addEventListener('click', () => importInput.click());
+            importInput.addEventListener('change', importFlashcards);
+        }
+        if (prevBtn) prevBtn.addEventListener("click", showPreviousCard);
+        if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+        if (backFlashcardsBtn) backFlashcardsBtn.addEventListener('click', showHome);
+        if (openClozeBtn) openClozeBtn.addEventListener('click', () => openCloze());
+        // Difficulty buttons
+        difficultyBtns.forEach(btn => {
+            btn.addEventListener('click', () => setDifficulty(btn.dataset.difficulty));
+        });
+        // Keyboard navigation
+        document.addEventListener('keydown', handleKeyDown);
+        flashcardsInitialized = true;
     }
-    if (prevBtn) prevBtn.addEventListener("click", showPreviousCard);
-    if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
-
-    // Difficulty buttons
-    difficultyBtns.forEach(btn => {
-        btn.addEventListener('click', () => setDifficulty(btn.dataset.difficulty));
-    });
-
-    // Keyboard navigation
-    document.addEventListener('keydown', handleKeyDown);
 }
 
 function initHomePage() {
@@ -759,6 +826,10 @@ function initHomePage() {
             topicView.scrollTop = topicViewScroll;
         }
     });
+    if (homeLink) homeLink.addEventListener('click', e => { e.preventDefault(); showHome(); });
+    if (examLink) examLink.addEventListener('click', e => { e.preventDefault(); openExam(); });
+    if (examBackBtn) examBackBtn.addEventListener('click', showHome);
+    if (backClozeBtn) backClozeBtn.addEventListener('click', showHome);
 }
 
 // Load flashcards from localStorage or use sample data
@@ -1064,9 +1135,6 @@ window.addEventListener('beforeunload', () => {
 // Initialize the application when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     loadFlashcards();
-    if (document.querySelector('.home')) {
-        initHomePage();
-    } else {
-        initFlashcardsPage();
-    }
+    initHomePage();
+    initFlashcardsPage();
 });
