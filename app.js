@@ -347,6 +347,13 @@ function handleNameChange() {
     }
 }
 
+// Exam page handling
+function openExam() {
+    document.getElementById('exam-lobby').style.display = 'block';
+    document.getElementById('exam-question').style.display = 'none';
+    document.getElementById('exam-results').style.display = 'none';
+}
+
 // Progress chart and weak topics
 function renderProgressChart() {
     if (!progressChartCanvas || typeof Chart === 'undefined') return;
