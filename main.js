@@ -119,6 +119,11 @@
       });
     }
 
+    const openExamLink = document.getElementById('open-exam-link');
+    if(openExamLink){
+      openExamLink.addEventListener('click', e => { e.preventDefault(); if(window.openExam) window.openExam(); toggleMenu(true); });
+    }
+
     // ----- Persistence helpers -----
     const STORAGE_KEY = 'appData';
     function loadData(){
