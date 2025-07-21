@@ -732,8 +732,6 @@ function initFlashcardsPage() {
         btn.addEventListener('click', () => setDifficulty(btn.dataset.difficulty));
     });
 
-    // Keyboard navigation
-    document.addEventListener('keydown', handleKeyDown);
 }
 
 function initHomePage() {
@@ -775,6 +773,16 @@ function initHomePage() {
             topicView.scrollTop = topicViewScroll;
         }
     });
+}
+
+// Show flashcards view and enable keyboard navigation
+function openFlashcards() {
+    document.addEventListener('keydown', handleKeyDown);
+}
+
+// Called when leaving flashcards view to disable keyboard navigation
+function hideAllPages() {
+    document.removeEventListener('keydown', handleKeyDown);
 }
 
 // Load flashcards from localStorage or use sample data
@@ -1082,7 +1090,9 @@ document.addEventListener('DOMContentLoaded', () => {
     loadFlashcards();
     if (document.querySelector('.home')) {
         initHomePage();
+        hideAllPages();
     } else {
         initFlashcardsPage();
+        openFlashcards();
     }
 });
