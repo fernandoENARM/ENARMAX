@@ -1,6 +1,5 @@
 (function(){
-  const params = new URLSearchParams(location.search);
-  const topicId = params.get('topicId') || sessionStorage.getItem('topicId');
+  let topicId = null;
 
   function loadCards(){
     try { return JSON.parse(localStorage.getItem('medicalFlashcards')) || []; }
@@ -120,12 +119,16 @@
     btn.addEventListener('click', () => record(parseInt(btn.dataset.quality,10)));
   });
   exitBtn.addEventListener('click', () => {
-    history.back();
+    if(window.closeStudySession) window.closeStudySession();
   });
   backBtn.addEventListener('click', () => {
     modal.setAttribute('aria-hidden','true');
-    history.back();
+    if(window.closeStudySession) window.closeStudySession();
   });
 
-  start();
+  window.startStudySession = function(id){
+    topicId = id || sessionStorage.getItem('topicId');
+    if(id) sessionStorage.setItem('topicId', id);
+    start();
+  };
 })();
