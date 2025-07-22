@@ -206,22 +206,10 @@
     timeLeft: 0
   };
 
-  function shuffle(arr){
-    for(let i = arr.length - 1; i > 0; i--){
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  }
-
-  function loadCards(){
-    try {
-      return JSON.parse(localStorage.getItem('medicalFlashcards')) || [];
-    } catch { return []; }
-  }
+  // shuffle and loadCards are provided by utils.js
 
   function buildExamSet(){
-    const all = loadCards();
+    const all = window.loadCards();
     const isNew = c => c.interval === 0;
     const difficult = all.filter(c => !isNew(c) && (c.quality ?? 0) <= 3);
     const newCards = all.filter(isNew);
@@ -251,9 +239,9 @@
       }
     }
 
-    shuffle(difficult);
-    shuffle(newCards);
-    shuffle(rest);
+    window.shuffle(difficult);
+    window.shuffle(newCards);
+    window.shuffle(rest);
 
     const set = [
       ...difficult.slice(0, needDiff).map(c => ({card: c, group: 'difícil'})),
@@ -268,7 +256,7 @@
       set.push({card: r, group: r.interval === 0 ? 'nueva' : ((r.quality ?? 0) <=3 ? 'difícil' : 'resto')});
     }
 
-    shuffle(set);
+    window.shuffle(set);
     return set.slice(0,40);
   }
 

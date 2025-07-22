@@ -2,18 +2,7 @@
   const params = new URLSearchParams(location.search);
   const topicId = params.get('topicId') || sessionStorage.getItem('topicId');
 
-  function loadCards(){
-    try { return JSON.parse(localStorage.getItem('medicalFlashcards')) || []; }
-    catch { return []; }
-  }
-
-  function shuffle(arr){
-    for(let i=arr.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [arr[i],arr[j]] = [arr[j],arr[i]];
-    }
-    return arr;
-  }
+  // loadCards and shuffle are provided by utils.js
 
 
   const questionEl = document.getElementById('study-question');
@@ -33,9 +22,9 @@
   let wrong = 0;
 
   function start(){
-    const all = loadCards();
+    const all = window.loadCards();
     cards = all.filter(c => c.topicId === topicId);
-    shuffle(cards);
+    window.shuffle(cards);
     idx = 0;
     correct = 0;
     wrong = 0;
@@ -74,7 +63,7 @@
     const card = cards[idx];
     window.scheduleCard(card, quality);
     if(quality >=4) correct++; else wrong++;
-    const all = loadCards();
+    const all = window.loadCards();
     const i = all.findIndex(c => c.question === card.question);
     if(i !== -1){ all[i] = card; localStorage.setItem('medicalFlashcards', JSON.stringify(all)); }
     idx++;
