@@ -662,7 +662,13 @@ function renderTopicList(specialty) {
     topics.filter(t => t.specialty === specialty).forEach(t => {
         const card = document.createElement('div');
         card.className = 'deck-card topic-card';
-        card.textContent = t.name;
+        const icon = document.createElement('i');
+        icon.className = 'topic-icon';
+        icon.textContent = '📚';
+        const title = document.createElement('span');
+        title.textContent = t.name;
+        card.appendChild(icon);
+        card.appendChild(title);
         card.addEventListener('click', () => openTopicDetail(t));
         topicListEl.appendChild(card);
     });
