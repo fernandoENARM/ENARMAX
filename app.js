@@ -253,6 +253,7 @@ const homeContainer = document.querySelector('.container.home');
 const topicView = document.getElementById('topic-view');
 const topicListEl = document.getElementById('topic-list');
 const topicViewTitle = document.getElementById('topic-view-title');
+const specialtySummary = document.getElementById('specialty-summary');
 const topicDetail = document.getElementById('topic-detail');
 const topicDetailTitle = document.getElementById('topic-detail-title');
 const metricTotal = document.getElementById('metric-total');
@@ -655,10 +656,51 @@ function renderDeckCarousel() {
 let currentTopic = null;
 let topicViewScroll = 0;
 
+function renderSpecialtySummary(specialty) {
+    if (!specialtySummary) return;
+    const cards = allFlashcards.filter(c => c.specialty === specialty);
+    const total = cards.length;
+    const reviewed = cards.filter(c => c.reviewCount && c.reviewCount > 0).length;
+    const percent = total ? Math.round((reviewed / total) * 100) : 0;
+
+    ensureMetrics(specialty);
+    const m = appData.metrics[specialty];
+    const accuracy = m.reviews ? Math.round(((m.reviews - m.errors) / m.reviews) * 100) : 0;
+
+    const catStats = {};
+    cards.forEach(c => {
+        const cat = c.category || 'otros';
+        if (!catStats[cat]) catStats[cat] = { easy: 0, hard: 0 };
+        if (c.difficulty === 'easy') catStats[cat].easy++;
+        if (c.difficulty === 'hard') catStats[cat].hard++;
+    });
+    let weak = '';
+    let strong = '';
+    Object.entries(catStats).forEach(([cat, st]) => {
+        if (!weak || st.hard > catStats[weak].hard) weak = cat;
+        if (!strong || st.easy > catStats[strong].easy) strong = cat;
+    });
+
+    specialtySummary.innerHTML = '';
+    const items = [
+        {num: percent + '%', label: 'repasadas'},
+        {num: accuracy + '%', label: 'aciertos totales'},
+        {num: strong || '-', label: 'tema más fuerte'},
+        {num: weak || '-', label: 'tema más débil'}
+    ];
+    items.forEach(it => {
+        const div = document.createElement('div');
+        div.className = 'summary-item';
+        div.innerHTML = `<span class="summary-number">${it.num}</span><span class="summary-label">${it.label}</span>`;
+        specialtySummary.appendChild(div);
+    });
+}
+
 function renderTopicList(specialty) {
     if (!topicView || !topicListEl) return;
     topicListEl.innerHTML = '';
     topicViewTitle.textContent = `Temas de ${specialtyNames[specialty] || specialty}`;
+    renderSpecialtySummary(specialty);
     topics.filter(t => t.specialty === specialty).forEach(t => {
         const card = document.createElement('div');
         card.className = 'deck-card topic-card';

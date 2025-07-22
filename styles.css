@@ -784,6 +784,32 @@ body.dark-mode .md-audio {
     cursor: pointer;
 }
 
+/* Specialty summary */
+.specialty-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.summary-item {
+    flex: 1 1 120px;
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 15px;
+    text-align: center;
+}
+
+.summary-number {
+    font-size: 1.5rem;
+    display: block;
+}
+
+.summary-label {
+    color: var(--secondary-color);
+}
+
 /* ---- Study session ---- */
 .study-page .flashcard-front,
 .study-page .flashcard-back {
