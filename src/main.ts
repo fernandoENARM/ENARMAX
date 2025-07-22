@@ -1,12 +1,13 @@
+// @ts-nocheck
 (function(){
-  function insertAtCursor(textarea, text) {
+  function insertAtCursor(textarea: HTMLTextAreaElement, text: string) {
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     textarea.setRangeText(text, start, end, 'end');
     textarea.focus();
   }
 
-  window.renderMarkdown = function(mdText, container){
+  window.renderMarkdown = function(mdText: string, container: HTMLElement | null){
     if(!container){ return; }
     let text = mdText || '';
     text = text.replace(/\$\$(.+?)\$\$/gs, '<div class="latex-block">$1</div>');

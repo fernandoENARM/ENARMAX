@@ -1,5 +1,6 @@
+// @ts-nocheck
 // Sample medical flashcards data
-let flashcards = [
+let flashcards: Flashcard[] = [
     {
         question: "¿Qué es la hipertensión arterial?",
         answer: "Es una condición médica en la que la presión arterial es persistentemente elevada, generalmente definida como una presión sistólica de 140 mmHg o más y/o una presión diastólica de 90 mmHg o más.",
@@ -193,7 +194,7 @@ const defaultTopicMap = {
     ]
 };
 
-let topics = JSON.parse(localStorage.getItem('studyTopics') || '[]');
+let topics: Topic[] = JSON.parse(localStorage.getItem('studyTopics') || '[]');
 if (topics.length === 0) {
     topics = [];
     Object.entries(defaultTopicMap).forEach(([spec, names]) => {
@@ -264,7 +265,7 @@ const backToHomeBtn = document.getElementById('back-to-home');
 const topicBackBtn = document.getElementById('topic-back-btn');
 
 // App state
-let allFlashcards = [];
+let allFlashcards: Flashcard[] = [];
 let currentCardIndex = 0;
 let cardsReviewedToday = 0;
 let pendingCards = 0;

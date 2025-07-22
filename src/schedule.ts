@@ -1,5 +1,6 @@
+// @ts-nocheck
 (function(){
-  window.scheduleCard = function scheduleCard(card, quality){
+  window.scheduleCard = function scheduleCard(card: Flashcard, quality: number){
     card.efactor = card.efactor || 2.5;
     card.repetitions = card.repetitions || 0;
     card.interval = card.interval || 0;

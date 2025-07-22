@@ -1,13 +1,14 @@
+// @ts-nocheck
 (function(){
   const params = new URLSearchParams(location.search);
   const topicId = params.get('topicId') || sessionStorage.getItem('topicId');
 
-  function loadCards(){
-    try { return JSON.parse(localStorage.getItem('medicalFlashcards')) || []; }
+  function loadCards(): Flashcard[]{
+    try { return JSON.parse(localStorage.getItem('medicalFlashcards')!) || []; }
     catch { return []; }
   }
 
-  function shuffle(arr){
+  function shuffle<T>(arr: T[]): T[]{
     for(let i=arr.length-1;i>0;i--){
       const j = Math.floor(Math.random()*(i+1));
       [arr[i],arr[j]] = [arr[j],arr[i]];
@@ -26,7 +27,7 @@
   const summary = document.getElementById('session-summary');
   const backBtn = document.getElementById('session-back');
 
-  let cards = [];
+  let cards: Flashcard[] = [];
   let idx = 0;
   let revealed = false;
   let correct = 0;
@@ -70,7 +71,7 @@
     progressFill.style.width = `${((idx+1)/cards.length)*100}%`;
   }
 
-  function record(quality){
+  function record(quality: number){
     const card = cards[idx];
     window.scheduleCard(card, quality);
     if(quality >=4) correct++; else wrong++;

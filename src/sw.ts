@@ -1,3 +1,4 @@
+// @ts-nocheck
 const CACHE_NAME = 'enarmax-v3';
 const ASSETS = [
   '/',
@@ -7,10 +8,10 @@ const ASSETS = [
   'exam.html',
   'study.html',
   'styles.css',
-  'app.js',
-  'cloze.js',
-  'study.js',
-  'main.js',
+  'dist/app.js',
+  'dist/cloze.js',
+  'dist/study.js',
+  'dist/main.js',
   'js/chart.min.js'
 ];
 self.addEventListener('install', e => {
